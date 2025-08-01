@@ -88,12 +88,14 @@ function CoinDetailPageInner() {
         const res = await fetch(`/api/coin/${id}/market_chart?days=${range}`);
         showApiErrorToast(res, showToast);
         const data = await res.json();
+        if (res.status === 400 && !retry) {
+          showToast(
+            "Bad Request: If you are using Pro API key, please change your root URL from api.coingecko.com to pro-api.coingecko.com. See https://docs.coingecko.com/reference/authentication",
+            "error"
+          );
+          return;
+        }
         if (!didCancel) {
-          if (res.status === 400 && !retry) {
-            // Wait seconds and retry once
-            setTimeout(() => fetchChartData(true), 4000);
-            return;
-          }
           setChartData(data);
           setChartLoading(false);
         }
@@ -135,11 +137,30 @@ function CoinDetailPageInner() {
       setCompareChartData([]);
       for (let i = 0; i < compareSelection.length; i++) {
         const coin = compareSelection[i];
-        const res = await fetch(`/api/coin/${coin.value}/market_chart?days=${range}`);
-        showApiErrorToast(res, showToast);
-        const data = await res.json();
-        if (cancelled) return;
-        setCompareChartData(prev => [...prev, { id: coin.value, name: coin.label, data }]);
+        try {
+          const res = await fetch(`/api/coin/${coin.value}/market_chart?days=${range}`);
+          if (res.status === 400) {
+            showToast(
+              "Bad Request: If you are using Pro API key, please change your root URL from api.coingecko.com to pro-api.coingecko.com. See https://docs.coingecko.com/reference/authentication",
+              "error"
+            );
+            continue; // Skip this coin, try next
+          }
+          if (res.status === 429) {
+            showToast("Too Many Requests. Please wait and try again or upgrade to enterprise API Key", "error");
+            continue;
+          }
+          if (!res.ok) {
+            showToast(`Error: ${res.statusText || res.status}`, "error");
+            continue;
+          }
+          const data = await res.json();
+          if (cancelled) return;
+          setCompareChartData(prev => [...prev, { id: coin.value, name: coin.label, data }]);
+        } catch {
+          if (cancelled) return;
+          showToast(`Failed to load chart data for ${coin.label}`, "error");
+        }
         // Wait 2 seconds before loading the next coin
         if (i < compareSelection.length - 1) {
           await new Promise(res => setTimeout(res, 2000));

@@ -17,6 +17,11 @@ const ToastContext = React.createContext<{
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const showToast = (message: string, type: ToastType = "info") => {
     const id = Date.now() + Math.random();
@@ -29,7 +34,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toasts, showToast }}>
       {children}
-      {typeof window !== "undefined" && createPortal(
+      {mounted && createPortal(
         <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
           {toasts.map((toast) => (
             <div

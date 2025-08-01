@@ -9,12 +9,17 @@ const themes = [
 ];
 
 export function ThemeSwitcher({ className = "" }: { className?: string }) {
-	const [theme, setTheme] = React.useState<string>(() => {
+	const [theme, setTheme] = React.useState<string>("light");
+
+	// Sync theme from localStorage after mount to avoid hydration mismatch
+	React.useEffect(() => {
 		if (typeof window !== "undefined") {
-			return localStorage.getItem("theme") || "light";
+			const stored = localStorage.getItem("theme");
+			if (stored && stored !== theme) setTheme(stored);
 		}
-		return "light";
-	});
+		// Only run on mount
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	React.useEffect(() => {
 		if (typeof window !== "undefined") {
