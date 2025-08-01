@@ -17,6 +17,7 @@ import {
   Filler,
 } from "chart.js";
 import Link from "next/link";
+import CryptoTable from "@/components/home/CryptoTable";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
@@ -35,6 +36,10 @@ export default function CoinDetailPage() {
   const [range, setRange] = useState("7");
   const [chartData, setChartData] = useState<any>(null);
   const [chartLoading, setChartLoading] = useState(true);
+  const [showCompare, setShowCompare] = useState(false);
+  const [compareCoins, setCompareCoins] = useState<any[]>([]);
+  const [compareLoading, setCompareLoading] = useState(false);
+  const [compareError, setCompareError] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -63,6 +68,24 @@ export default function CoinDetailPage() {
         setChartLoading(false);
       });
   }, [id, range]);
+
+  // Fetch 50 coins for comparison if needed
+  useEffect(() => {
+    if (showCompare) {
+      setCompareLoading(true);
+      setCompareError("");
+      fetch("/api/coins?page=1")
+        .then((res) => res.json())
+        .then((data) => {
+          setCompareCoins(data);
+          setCompareLoading(false);
+        })
+        .catch(() => {
+          setCompareError("Failed to load comparison data");
+          setCompareLoading(false);
+        });
+    }
+  }, [showCompare]);
 
   if (loading) {
     return (
@@ -168,6 +191,62 @@ export default function CoinDetailPage() {
           </div>
         </CardContent>
       </Card>
+      {/* Compare section moved below the widget */}
+      <div className="mt-6 flex flex-col gap-2">
+        <div>
+          <span className="mr-2">Compare with other coins?</span>
+          <Button variant={showCompare ? "default" : "outline"} size="sm" onClick={() => setShowCompare(v => !v)}>
+            {showCompare ? "Hide" : "Yes"}
+          </Button>
+        </div>
+        {showCompare && (
+          <div className="mb-6">
+            {compareLoading ? (
+              <LoadingSkeleton className="h-32" />
+            ) : compareError ? (
+              <div className="text-destructive">{compareError}</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-card rounded-lg shadow mb-4">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="p-2 text-left">#</th>
+                      <th className="p-2 text-left">Coin</th>
+                      <th className="p-2 text-left">Price</th>
+                      <th className="p-2 text-left">vs {coin.symbol?.toUpperCase()} (%)</th>
+                      <th className="p-2 text-left">24h %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {compareCoins.map((c: any) => {
+                      const diff = coin.market_data?.current_price?.usd && c.current_price
+                        ? ((c.current_price - coin.market_data.current_price.usd) / coin.market_data.current_price.usd) * 100
+                        : null;
+                      return (
+                        <tr key={c.id} className="border-b hover:bg-muted cursor-pointer" onClick={() => window.location.href = `/coin/${c.id}` }>
+                          <td className="p-2">{c.market_cap_rank}</td>
+                          <td className="p-2 flex items-center gap-2">
+                            <img src={c.image} alt={c.name} className="w-6 h-6" />
+                            <span>{c.name}</span>
+                            <span className="text-muted-foreground text-xs">{c.symbol.toUpperCase()}</span>
+                          </td>
+                          <td className="p-2">${c.current_price?.toLocaleString()}</td>
+                          <td className={`p-2 ${diff !== null ? (diff > 0 ? "text-green-600" : "text-red-600") : ""}`}>
+                            {diff !== null ? diff.toFixed(2) + "%" : "-"}
+                          </td>
+                          <td className={`p-2 ${c.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>
+                            {c.price_change_percentage_24h?.toFixed(2)}%
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </main>
   );
 }
