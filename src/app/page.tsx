@@ -53,8 +53,8 @@ export default function HomePage() {
         />
         <input
           type="number"
-          placeholder="Min Volume"
-          className="input input-bordered w-full md:w-32"
+          placeholder="Min 24h Volume"
+          className="input input-bordered w-full md:w-48"
           value={filters.volume}
           onChange={(e) => setFilters(f => ({ ...f, volume: e.target.value }))}
         />

@@ -3,6 +3,7 @@
 A full-featured cryptocurrency dashboard built with Next.js 14+ (App Router), TypeScript, Tailwind CSS, shadcn/ui, and react-chartjs-2. Deployed on Vercel.
 
 ## Features
+
 - **Home page**: Paginated table (50 per page) of cryptocurrencies from CoinGecko, with search, filters, loading skeletons, and error/empty states.
 - **Coin Detail page**: Price, market cap, volume, rank, supply, and interactive chart (24h, 7d, 30d, 90d).
 - **Watchlist**: ⭐ Favorite coins, persisted in localStorage, with live price updates.
@@ -11,6 +12,7 @@ A full-featured cryptocurrency dashboard built with Next.js 14+ (App Router), Ty
 - **Reusable Components**: Modular, maintainable codebase.
 
 ## Tech Stack
+
 - Next.js 14+ (App Router)
 - TypeScript
 - Tailwind CSS + shadcn/ui
@@ -18,6 +20,7 @@ A full-featured cryptocurrency dashboard built with Next.js 14+ (App Router), Ty
 - State: useState, useEffect, localStorage
 
 ## Getting Started
+
 1. Install dependencies:
    ```bash
    npm install
@@ -30,7 +33,9 @@ A full-featured cryptocurrency dashboard built with Next.js 14+ (App Router), Ty
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Deployment
+
 - Ready for Vercel deployment. See `vercel.json` for config.
 
 ## Assignment Notes
+
 - See assignment prompt for detailed requirements and features.
