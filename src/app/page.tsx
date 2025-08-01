@@ -82,7 +82,7 @@ export default function HomePage() {
       ) : coins.length === 0 ? (
         <div className="text-muted-foreground">No coins found.</div>
       ) : (
-        <CryptoTable coins={coins} page={page} setPage={setPage} search={debouncedSearch} filters={filters} />
+        <CryptoTable coins={Array.isArray(coins) ? coins : []} page={page} setPage={setPage} search={debouncedSearch} filters={filters} />
       )}
     </main>
   );
