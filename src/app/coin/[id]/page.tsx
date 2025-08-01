@@ -40,6 +40,7 @@ export default function CoinDetailPage() {
   const [compareCoins, setCompareCoins] = useState<any[]>([]);
   const [compareLoading, setCompareLoading] = useState(false);
   const [compareError, setCompareError] = useState("");
+  const [showXAxis, setShowXAxis] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -164,8 +165,8 @@ export default function CoinDetailPage() {
               </div>
             </div>
           </div>
-          <div>
-            <div className="flex gap-2 mb-2">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
+            <div className="flex gap-2">
               {CHART_RANGES.map((r) => (
                 <Button
                   key={r.value}
@@ -177,18 +178,21 @@ export default function CoinDetailPage() {
                 </Button>
               ))}
             </div>
-            {chartLoading ? (
-              <LoadingSkeleton className="h-64 w-full" />
-            ) : chart ? (
-              <Line data={chart} options={{
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false } }
-              }} />
-            ) : (
-              <div className="text-gray-500">No chart data available.</div>
-            )}
+            <Button variant="ghost" size="sm" onClick={() => setShowXAxis(x => !x)}>
+              {showXAxis ? "Hide X-Axis" : "Show X-Axis"}
+            </Button>
           </div>
+          {chartLoading ? (
+            <LoadingSkeleton className="h-64 w-full" />
+          ) : chart ? (
+            <Line data={chart} options={{
+              responsive: true,
+              plugins: { legend: { display: true, position: "top" } },
+              scales: { x: { display: showXAxis, title: { display: showXAxis, text: "Date" } } }
+            }} />
+          ) : (
+            <div className="text-gray-500">No chart data available.</div>
+          )}
         </CardContent>
       </Card>
       {/* Compare section moved below the widget */}
