@@ -12,11 +12,12 @@ interface CryptoTableProps {
     volume?: string;
     rank?: string;
   };
+  watchEnabled?: boolean;
 }
 
 const PAGE_SIZE = 50;
 
-const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search = "", filters = {} }) => {
+const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search = "", filters = {}, watchEnabled = true }) => {
   const watchlist = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("watchlist") || "[]") : [];
   const toggleWatchlist = (id: string) => {
     let wl = JSON.parse(localStorage.getItem("watchlist") || "[]");
@@ -61,7 +62,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search 
             <th className="p-2 text-left">24h %</th>
             <th className="p-2 text-left">Market Cap</th>
             <th className="p-2 text-left">24h Volume</th>
-            <th className="p-2 text-left">Watch</th>
+            {watchEnabled && <th className="p-2 text-left">Watch</th>}
           </tr>
         </thead>
         <tbody>
@@ -83,14 +84,16 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search 
               </td>
               <td className="p-2">${coin.market_cap?.toLocaleString()}</td>
               <td className="p-2">${coin.total_volume?.toLocaleString()}</td>
-              <td className="p-2" onClick={e => e.stopPropagation()}>
-                <button
-                  aria-label="Toggle watchlist"
-                  onClick={() => toggleWatchlist(coin.id)}
-                >
-                  <Star className={`w-5 h-5 ${watchlist.includes(coin.id) ? "fill-yellow-400 text-yellow-400" : ""}`} />
-                </button>
-              </td>
+              {watchEnabled && (
+                <td className="p-2" onClick={e => e.stopPropagation()}>
+                  <button
+                    aria-label="Toggle watchlist"
+                    onClick={() => toggleWatchlist(coin.id)}
+                  >
+                    <Star className={`w-5 h-5 ${watchlist.includes(coin.id) ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

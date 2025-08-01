@@ -4,6 +4,7 @@ import CryptoTable from "@/components/home/CryptoTable";
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 import FormInput from "@/components/ui/FormInput";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Switch } from "@/components/ui/switch";
 
 export default function HomePage() {
   const [coins, setCoins] = useState<any[]>([]);
@@ -17,6 +18,7 @@ export default function HomePage() {
     volume: "",
     rank: "",
   });
+  const [watchEnabled, setWatchEnabled] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -79,6 +81,10 @@ export default function HomePage() {
           value={filters.rank}
           onChange={(e) => setFilters(f => ({ ...f, rank: e.target.value }))}
         />
+        <div className="flex items-center gap-2 ml-auto">
+          <Switch checked={watchEnabled} onCheckedChange={setWatchEnabled} id="watch-toggle" />
+          <label htmlFor="watch-toggle" className="text-sm text-muted-foreground select-none cursor-pointer">Watch View</label>
+        </div>
       </div>
       {loading ? (
         <LoadingSkeleton className="h-32" />
@@ -87,7 +93,7 @@ export default function HomePage() {
       ) : coins.length === 0 ? (
         <div className="text-muted-foreground">No coins found.</div>
       ) : (
-        <CryptoTable coins={Array.isArray(coins) ? coins : []} page={page} setPage={setPage} search={debouncedSearch} filters={filters} />
+        <CryptoTable coins={Array.isArray(coins) ? coins : []} page={page} setPage={setPage} search={debouncedSearch} filters={filters} watchEnabled={watchEnabled} />
       )}
     </main>
   );
