@@ -16,6 +16,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
+import Link from "next/link";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
@@ -102,6 +103,11 @@ export default function CoinDetailPage() {
 
   return (
     <main className="max-w-3xl mx-auto p-4">
+      <div className="mb-4">
+        <Link href="/">
+          <Button variant="outline" size="sm">&larr; Back to List</Button>
+        </Link>
+      </div>
       <Card>
         <CardHeader className="flex flex-row items-center gap-4">
           <img src={coin.image?.large || coin.image?.thumb} alt={coin.name} className="w-12 h-12" />
