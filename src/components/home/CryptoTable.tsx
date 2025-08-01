@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
 
@@ -18,16 +18,23 @@ interface CryptoTableProps {
 const PAGE_SIZE = 50;
 
 const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search = "", filters = {}, watchEnabled = true }) => {
-  const watchlist = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("watchlist") || "[]") : [];
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setWatchlist(JSON.parse(localStorage.getItem("watchlist") || "[]"));
+    }
+  }, []);
+
   const toggleWatchlist = (id: string) => {
-    let wl = JSON.parse(localStorage.getItem("watchlist") || "[]");
+    let wl = [...watchlist];
     if (wl.includes(id)) {
       wl = wl.filter((coinId: string) => coinId !== id);
     } else {
       wl.push(id);
     }
+    setWatchlist(wl);
     localStorage.setItem("watchlist", JSON.stringify(wl));
-    window.location.reload();
   };
 
   // Client-side search and filters
