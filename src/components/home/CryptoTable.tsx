@@ -97,9 +97,10 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search 
       </table>
       <div className="flex justify-between items-center mt-4">
         <button
-          className="btn btn-sm"
+          className={`btn btn-sm${page === 1 ? ' opacity-50 cursor-not-allowed' : ''}`}
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
+          aria-disabled={page === 1 ? "true" : "false"}
         >
           Previous
         </button>
