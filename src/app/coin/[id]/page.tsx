@@ -88,7 +88,17 @@ function CoinDetailPageInner() {
         const res = await fetch(`/api/coin/${id}/market_chart?days=${range}`);
         showApiErrorToast(res, showToast);
         const data = await res.json();
-        
+        if (res.status === 400 && !retry) {
+          showToast(
+            "Bad Request: If you are using Pro API key, please change your root URL from api.coingecko.com to pro-api.coingecko.com. See https://docs.coingecko.com/reference/authentication",
+            "error"
+          );
+          return;
+        }
+        if (!didCancel) {
+          setChartData(data);
+          setChartLoading(false);
+        }
       } catch {
         if (!didCancel) {
           setChartData(null);
