@@ -21,6 +21,7 @@ export default function HomePage() {
     const params = new URLSearchParams({
       page: page.toString(),
     });
+    console.log("Fetching page:", page); // Debug: log current page
     fetch(`/api/coins?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
