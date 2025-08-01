@@ -8,6 +8,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     percent: "",
@@ -33,6 +34,13 @@ export default function HomePage() {
         setLoading(false);
       });
   }, [page]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
 
   return (
     <main className="max-w-6xl mx-auto p-4">
@@ -74,7 +82,7 @@ export default function HomePage() {
       ) : coins.length === 0 ? (
         <div className="text-muted-foreground">No coins found.</div>
       ) : (
-        <CryptoTable coins={coins} page={page} setPage={setPage} search={search} filters={filters} />
+        <CryptoTable coins={coins} page={page} setPage={setPage} search={debouncedSearch} filters={filters} />
       )}
     </main>
   );

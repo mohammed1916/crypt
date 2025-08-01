@@ -6,9 +6,9 @@ let cache: { [key: string]: { data: any; timestamp: number } } = {};
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await context.params;
   const { searchParams } = new URL(req.url);
   const days = searchParams.get('days') || '1';
   // Only set interval if days > 1, otherwise omit it to avoid CoinGecko error

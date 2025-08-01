@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import WatchlistTable from "../../components/watchlist/WatchlistTable";
-import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
+import WatchlistTable from "@/components/watchlist/WatchlistTable";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 const getWatchlist = () => {
   if (typeof window === "undefined") return [];
