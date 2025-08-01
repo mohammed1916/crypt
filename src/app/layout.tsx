@@ -12,12 +12,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           className="acrylic-bg-gradient fixed inset-0 -z-100 pointer-events-none select-none"
           aria-hidden="true"
         />
-        <header className="w-full flex justify-between items-center p-4 border-b border-border bg-background acrylic-container">
+        <header className="w-full flex justify-between items-center p-4 border-b border-border bg-background">
           {/* Heading slot: will be replaced by Coin page if provided */}
           <NavbarHeading />
           <ThemeSwitcher />
         </header>
-        <div className="acrylic-container min-h-[80vh]">{children}</div>
+        <div className=" min-h-[80vh]">{children}</div>
         <Footer />
       </body>
     </html>
