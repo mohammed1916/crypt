@@ -31,6 +31,14 @@ const CHART_RANGES = [
 ];
 
 export default function CoinDetailPage() {
+  return (
+    <ToastProvider>
+      <CoinDetailPageInner />
+    </ToastProvider>
+  );
+}
+
+function CoinDetailPageInner() {
   const { id } = useParams<{ id: string }>();
   const showToast = useToast();
   const [coin, setCoin] = useState<any>(null);
@@ -47,14 +55,18 @@ export default function CoinDetailPage() {
   const [compareSelection, setCompareSelection] = useState<any[]>([]);
   const [compareChartData, setCompareChartData] = useState<any[]>([]);
 
+  function showApiErrorToast(res: Response, showToast: (msg: string, type?: "success"|"error"|"info") => void) {
+    if (!res.ok) {
+      if (res.status === 429) showToast("Too Many Requests. Please wait and try again or upgrade to enterprise API Key", "error");
+      else showToast(`Error: ${res.statusText || res.status}`, "error");
+    }
+  }
+
   useEffect(() => {
     setLoading(true);
     fetch(`/api/coin/${id}`)
       .then((res) => {
-        if (!res.ok) {
-          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
-          else showToast(`Error: ${res.statusText || res.status}`, "error");
-        }
+        showApiErrorToast(res, showToast);
         return res.json();
       })
       .then((data) => {
@@ -74,10 +86,7 @@ export default function CoinDetailPage() {
       setChartLoading(true);
       try {
         const res = await fetch(`/api/coin/${id}/market_chart?days=${range}`);
-        if (!res.ok) {
-          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
-          else showToast(`Error: ${res.statusText || res.status}`, "error");
-        }
+        showApiErrorToast(res, showToast);
         const data = await res.json();
         if (!didCancel) {
           if (res.status === 400 && !retry) {
@@ -104,10 +113,7 @@ export default function CoinDetailPage() {
   useEffect(() => {
     fetch("/api/coins?page=1")
       .then((res) => {
-        if (!res.ok) {
-          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
-          else showToast(`Error: ${res.statusText || res.status}`, "error");
-        }
+        showApiErrorToast(res, showToast);
         return res.json();
       })
       .then((data) => {
@@ -127,10 +133,7 @@ export default function CoinDetailPage() {
       }
       const results = await Promise.all(compareSelection.map(async (coin: any) => {
         const res = await fetch(`/api/coin/${coin.value}/market_chart?days=${range}`);
-        if (!res.ok) {
-          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
-          else showToast(`Error: ${res.statusText || res.status}`, "error");
-        }
+        showApiErrorToast(res, showToast);
         const data = await res.json();
         return { id: coin.value, name: coin.label, data };
       }));
@@ -189,6 +192,33 @@ export default function CoinDetailPage() {
     chartLabels.length && chartPrices.length
       ? {
           labels: chartLabels,
+          datasets: [
+            {
+              label: `${coin.name} Price (USD)`,
+              data: chartPrices,
+              borderColor: "#3b82f6",
+              backgroundColor: "rgba(59,130,246,0.1)",
+              fill: true,
+              tension: 0.3,
+            },
+          ],
+        }
+      : null;
+
+  // Derived array for safe usage
+  const compareCoinsArray = Array.isArray(compareCoins) ? compareCoins : [];
+
+  return (
+    <main className="max-w-3xl mx-auto p-4">
+      <div className="mb-4">
+        <Link href="/">
+          <Button variant="outline" size="sm">&larr; Back to List</Button>
+        </Link>
+      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center gap-4">
+          <img src={coin.image?.large || coin.image?.thumb} alt={coin.name} className="w-12 h-12" />
+          <div>
             <CardTitle className="text-2xl">{coin.name} ({coin.symbol?.toUpperCase()})</CardTitle>
             <div className="text-gray-500 text-sm">Rank #{coin.market_cap_rank}</div>
           </div>
