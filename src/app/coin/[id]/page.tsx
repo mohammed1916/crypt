@@ -57,17 +57,30 @@ export default function CoinDetailPage() {
   }, [id]);
 
   useEffect(() => {
-    setChartLoading(true);
-    fetch(`/api/coin/${id}/market_chart?days=${range}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setChartData(data);
-        setChartLoading(false);
-      })
-      .catch(() => {
-        setChartData(null);
-        setChartLoading(false);
-      });
+    let didCancel = false;
+    async function fetchChartData(retry = false) {
+      setChartLoading(true);
+      try {
+        const res = await fetch(`/api/coin/${id}/market_chart?days=${range}`);
+        const data = await res.json();
+        if (!didCancel) {
+          if (res.status === 400 && !retry) {
+            // Wait 2 seconds and retry once
+            setTimeout(() => fetchChartData(true), 2000);
+            return;
+          }
+          setChartData(data);
+          setChartLoading(false);
+        }
+      } catch {
+        if (!didCancel) {
+          setChartData(null);
+          setChartLoading(false);
+        }
+      }
+    }
+    fetchChartData();
+    return () => { didCancel = true; };
   }, [id, range]);
 
   // Fetch 50 coins for comparison if needed
@@ -106,16 +119,42 @@ export default function CoinDetailPage() {
     );
   }
 
+  // Format chart labels and data for x-axis
+  function getChartLabelsAndData() {
+    if (!chartData || !chartData.prices) return { labels: [], data: [] };
+    if (range === "1") {
+      // Show hour for 1 day
+      return {
+        labels: chartData.prices.map((p: [number, number]) => {
+          const d = new Date(p[0]);
+          return d.getHours().toString().padStart(2, "0") + ":" + d.getMinutes().toString().padStart(2, "0");
+        }),
+        data: chartData.prices.map((p: [number, number]) => p[1])
+      };
+    } else {
+      // Show only one point per unique day (last price of each day)
+      const dayMap = new Map();
+      chartData.prices.forEach((p: [number, number]) => {
+        const d = new Date(p[0]);
+        const label = d.toLocaleDateString();
+        dayMap.set(label, p[1]); // last price for the day
+      });
+      return {
+        labels: Array.from(dayMap.keys()),
+        data: Array.from(dayMap.values())
+      };
+    }
+  }
+
+  const { labels: chartLabels, data: chartPrices } = getChartLabelsAndData();
   const chart =
-    chartData && chartData.prices
+    chartLabels.length && chartPrices.length
       ? {
-          labels: chartData.prices.map((p: [number, number]) =>
-            new Date(p[0]).toLocaleDateString()
-          ),
+          labels: chartLabels,
           datasets: [
             {
               label: `${coin.name} Price (USD)`,
-              data: chartData.prices.map((p: [number, number]) => p[1]),
+              data: chartPrices,
               borderColor: "#3b82f6",
               backgroundColor: "rgba(59,130,246,0.1)",
               fill: true,
