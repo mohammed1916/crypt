@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import CryptoTable from "@/components/home/CryptoTable";
 import Select from "react-select";
+import { ToastProvider, useToast } from "@/components/ui/toast";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
@@ -31,6 +32,7 @@ const CHART_RANGES = [
 
 export default function CoinDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const showToast = useToast();
   const [coin, setCoin] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -48,13 +50,20 @@ export default function CoinDetailPage() {
   useEffect(() => {
     setLoading(true);
     fetch(`/api/coin/${id}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
+          else showToast(`Error: ${res.statusText || res.status}`, "error");
+        }
+        return res.json();
+      })
       .then((data) => {
         setCoin(data);
         setLoading(false);
       })
       .catch(() => {
         setError("Failed to load coin data");
+        showToast("Failed to load coin data", "error");
         setLoading(false);
       });
   }, [id]);
@@ -65,6 +74,10 @@ export default function CoinDetailPage() {
       setChartLoading(true);
       try {
         const res = await fetch(`/api/coin/${id}/market_chart?days=${range}`);
+        if (!res.ok) {
+          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
+          else showToast(`Error: ${res.statusText || res.status}`, "error");
+        }
         const data = await res.json();
         if (!didCancel) {
           if (res.status === 400 && !retry) {
@@ -79,6 +92,7 @@ export default function CoinDetailPage() {
         if (!didCancel) {
           setChartData(null);
           setChartLoading(false);
+          showToast("Failed to load chart data", "error");
         }
       }
     }
@@ -89,9 +103,18 @@ export default function CoinDetailPage() {
   // Fetch 50 coins for multi-select options
   useEffect(() => {
     fetch("/api/coins?page=1")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
+          else showToast(`Error: ${res.statusText || res.status}`, "error");
+        }
+        return res.json();
+      })
       .then((data) => {
-        setCompareCoins(data);
+        setCompareCoins(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        showToast("Failed to load coins list", "error");
       });
   }, []);
 
@@ -104,6 +127,10 @@ export default function CoinDetailPage() {
       }
       const results = await Promise.all(compareSelection.map(async (coin: any) => {
         const res = await fetch(`/api/coin/${coin.value}/market_chart?days=${range}`);
+        if (!res.ok) {
+          if (res.status === 429) showToast("Too Many Requests. Please wait and try again.", "error");
+          else showToast(`Error: ${res.statusText || res.status}`, "error");
+        }
         const data = await res.json();
         return { id: coin.value, name: coin.label, data };
       }));
@@ -162,30 +189,6 @@ export default function CoinDetailPage() {
     chartLabels.length && chartPrices.length
       ? {
           labels: chartLabels,
-          datasets: [
-            {
-              label: `${coin.name} Price (USD)`,
-              data: chartPrices,
-              borderColor: "#3b82f6",
-              backgroundColor: "rgba(59,130,246,0.1)",
-              fill: true,
-              tension: 0.3,
-            },
-          ],
-        }
-      : null;
-
-  return (
-    <main className="max-w-3xl mx-auto p-4">
-      <div className="mb-4">
-        <Link href="/">
-          <Button variant="outline" size="sm">&larr; Back to List</Button>
-        </Link>
-      </div>
-      <Card>
-        <CardHeader className="flex flex-row items-center gap-4">
-          <img src={coin.image?.large || coin.image?.thumb} alt={coin.name} className="w-12 h-12" />
-          <div>
             <CardTitle className="text-2xl">{coin.name} ({coin.symbol?.toUpperCase()})</CardTitle>
             <div className="text-gray-500 text-sm">Rank #{coin.market_cap_rank}</div>
           </div>
@@ -219,9 +222,9 @@ export default function CoinDetailPage() {
             <div className="w-64">
               <Select
                 isMulti
-                options={compareCoins.filter(c => c.id !== id).map((c: any) => ({ value: c.id, label: c.name }))}
+                options={compareCoinsArray.filter(c => c.id !== id).map((c: any) => ({ value: c.id, label: c.name }))}
                 value={compareSelection}
-                onChange={setCompareSelection}
+                onChange={value => setCompareSelection(Array.isArray(value) ? [...value] : [])}
                 placeholder="Compare coins on chart..."
                 classNamePrefix="react-select"
               />
@@ -321,7 +324,7 @@ export default function CoinDetailPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {compareCoins.map((c: any) => {
+                    { compareCoinsArray.map((c: any) => {
                       const diff = coin.market_data?.current_price?.usd && c.current_price
                         ? ((c.current_price - coin.market_data.current_price.usd) / coin.market_data.current_price.usd) * 100
                         : null;

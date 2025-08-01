@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/markets';
 const CACHE_DURATION = 60; // seconds
 let cache: { [page: string]: { data: any; timestamp: number } } = {};
+const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY;
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -26,7 +27,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const res = await fetch(`${COINGECKO_API}?${params.toString()}`);
+    const headers: Record<string, string> = {};
+    if (COINGECKO_API_KEY) {
+      headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
+    }
+    const res = await fetch(`${COINGECKO_API}?${params.toString()}`, { headers });
     if (!res.ok) throw new Error('Failed to fetch');
     const data = await res.json();
     cache[page] = { data, timestamp: Date.now() };
