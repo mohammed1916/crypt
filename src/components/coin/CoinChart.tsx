@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import LoadingSkeleton from "../ui/LoadingSkeleton";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 

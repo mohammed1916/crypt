@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import Link from "next/link";
 import { Star } from "lucide-react";
 
 interface CryptoTableProps {
@@ -65,7 +66,11 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search 
         </thead>
         <tbody>
           {filteredCoins.map((coin) => (
-            <tr key={coin.id} className="border-b hover:bg-muted">
+            <tr
+              key={coin.id}
+              className="border-b hover:bg-muted cursor-pointer"
+              onClick={() => window.location.href = `/coin/${coin.id}`}
+            >
               <td className="p-2">{coin.market_cap_rank}</td>
               <td className="p-2 flex items-center gap-2">
                 <img src={coin.image} alt={coin.name} className="w-6 h-6" />
@@ -78,7 +83,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search 
               </td>
               <td className="p-2">${coin.market_cap?.toLocaleString()}</td>
               <td className="p-2">${coin.total_volume?.toLocaleString()}</td>
-              <td className="p-2">
+              <td className="p-2" onClick={e => e.stopPropagation()}>
                 <button
                   aria-label="Toggle watchlist"
                   onClick={() => toggleWatchlist(coin.id)}

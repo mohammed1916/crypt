@@ -35,7 +35,3 @@ A full-featured cryptocurrency dashboard built with Next.js 14+ (App Router), Ty
 ## Deployment
 
 - Ready for Vercel deployment. See `vercel.json` for config.
-
-## Assignment Notes
-
-- See assignment prompt for detailed requirements and features.
