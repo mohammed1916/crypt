@@ -11,7 +11,7 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
       {label && <label className="mb-1 text-xs text-muted-foreground">{label}</label>}
       <input
         ref={ref}
-        className={`input input-bordered p-[2px] ${className}`}
+        className={`input input-bordered p-[2px] ${className} bg-background text-foreground caret-primary placeholder:text-muted-foreground`} // ensure visible in dark mode
         {...props}
       />
     </div>
