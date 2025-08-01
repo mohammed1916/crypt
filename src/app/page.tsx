@@ -48,13 +48,13 @@ export default function HomePage() {
 
   return (
     <main className="max-w-6xl mx-auto p-4">
-      <div className="mb-4 bg-card rounded-xl shadow-sm p-4 flex flex-col md:flex-row gap-4 md:items-center border border-border">
+      <div className="mb-4 acrylic-card shadow-sm p-4 flex flex-col md:flex-row gap-4 md:items-center border border-border">
         <div className="relative w-full md:w-64">
           <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <FormInput
             type="text"
             placeholder="Search by name or symbol..."
-            className="p-[8px] pl-10 w-full md:w-64 focus:ring-2 focus:ring-primary focus:border-primary transition"
+            className="p-[8px] rounded-lg pl-10 w-full md:w-64 focus:ring-2 focus:ring-primary focus:border-primary transition"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -62,21 +62,21 @@ export default function HomePage() {
         <FormInput
           type="number"
           placeholder="Min 24h %"
-          className="p-[8px] w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
+          className="p-[8px] rounded-lg w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.percent}
           onChange={(e) => setFilters(f => ({ ...f, percent: e.target.value }))}
         />
         <FormInput
           type="number"
           placeholder="Min 24h Volume"
-          className=" p-[8px] w-full md:w-48 focus:ring-2 focus:ring-primary focus:border-primary transition"
+          className="p-[8px] rounded-lg w-full md:w-48 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.volume}
           onChange={(e) => setFilters(f => ({ ...f, volume: e.target.value }))}
         />
         <FormInput
           type="number"
           placeholder="Max Rank"
-          className="p-[8px] w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
+          className="p-[8px] rounded-lg w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.rank}
           onChange={(e) => setFilters(f => ({ ...f, rank: e.target.value }))}
         />
