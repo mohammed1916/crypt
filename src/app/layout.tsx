@@ -1,6 +1,7 @@
 import "./globals.css";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import NavbarHeading from "@/components/ui/NavbarHeading";
+import Footer from "@/components/ui/Footer";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeSwitcher />
         </header>
         {children}
+        <Footer />
       </body>
     </html>
   );

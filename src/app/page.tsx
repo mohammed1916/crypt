@@ -62,7 +62,7 @@ export default function HomePage() {
         <FormInput
           type="number"
           placeholder="Min 24h %"
-          className="w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
+          className="w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition p-4"
           value={filters.percent}
           onChange={(e) => setFilters(f => ({ ...f, percent: e.target.value }))}
         />
