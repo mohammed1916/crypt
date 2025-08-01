@@ -90,8 +90,8 @@ function CoinDetailPageInner() {
         const data = await res.json();
         if (!didCancel) {
           if (res.status === 400 && !retry) {
-            // Wait 2 seconds and retry once
-            setTimeout(() => fetchChartData(true), 2000);
+            // Wait seconds and retry once
+            setTimeout(() => fetchChartData(true), 4000);
             return;
           }
           setChartData(data);
@@ -124,22 +124,30 @@ function CoinDetailPageInner() {
       });
   }, []);
 
-  // Fetch chart data for selected coins
+  // Fetch chart data for selected coins, one by one with animation
   useEffect(() => {
-    async function fetchCompareCharts() {
+    let cancelled = false;
+    async function fetchCompareChartsSequentially() {
       if (!compareSelection.length) {
         setCompareChartData([]);
         return;
       }
-      const results = await Promise.all(compareSelection.map(async (coin: any) => {
+      setCompareChartData([]);
+      for (let i = 0; i < compareSelection.length; i++) {
+        const coin = compareSelection[i];
         const res = await fetch(`/api/coin/${coin.value}/market_chart?days=${range}`);
         showApiErrorToast(res, showToast);
         const data = await res.json();
-        return { id: coin.value, name: coin.label, data };
-      }));
-      setCompareChartData(results);
+        if (cancelled) return;
+        setCompareChartData(prev => [...prev, { id: coin.value, name: coin.label, data }]);
+        // Wait 2 seconds before loading the next coin
+        if (i < compareSelection.length - 1) {
+          await new Promise(res => setTimeout(res, 2000));
+        }
+      }
     }
-    fetchCompareCharts();
+    fetchCompareChartsSequentially();
+    return () => { cancelled = true; };
   }, [compareSelection, range]);
 
   if (loading) {
