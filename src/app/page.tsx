@@ -54,7 +54,7 @@ export default function HomePage() {
           <FormInput
             type="text"
             placeholder="Search by name or symbol..."
-            className="pl-10 w-full md:w-64 focus:ring-2 focus:ring-primary focus:border-primary transition"
+            className="p-[8px] pl-10 w-full md:w-64 focus:ring-2 focus:ring-primary focus:border-primary transition"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -62,21 +62,21 @@ export default function HomePage() {
         <FormInput
           type="number"
           placeholder="Min 24h %"
-          className="w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition p-4"
+          className="p-[8px] w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.percent}
           onChange={(e) => setFilters(f => ({ ...f, percent: e.target.value }))}
         />
         <FormInput
           type="number"
           placeholder="Min 24h Volume"
-          className="w-full md:w-48 focus:ring-2 focus:ring-primary focus:border-primary transition"
+          className=" p-[8px] w-full md:w-48 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.volume}
           onChange={(e) => setFilters(f => ({ ...f, volume: e.target.value }))}
         />
         <FormInput
           type="number"
           placeholder="Max Rank"
-          className="w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
+          className="p-[8px] w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.rank}
           onChange={(e) => setFilters(f => ({ ...f, rank: e.target.value }))}
         />
