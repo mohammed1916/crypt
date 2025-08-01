@@ -48,7 +48,6 @@ export default function HomePage() {
 
   return (
     <main className="max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Cryptocurrency Prices</h1>
       <div className="mb-4 bg-card rounded-xl shadow-sm p-4 flex flex-col md:flex-row gap-4 md:items-center border border-border">
         <div className="relative w-full md:w-64">
           <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
