@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins';
+const CACHE_DURATION = 60; // seconds
+let cache: { [id: string]: { data: any; timestamp: number } } = {};
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  if (!id) {
+    return NextResponse.json({ error: 'Missing coin id' }, { status: 400 });
+  }
+
+  // Simple in-memory cache
+  if (
+    cache[id] &&
+    Date.now() - cache[id].timestamp < CACHE_DURATION * 1000
+  ) {
+    return NextResponse.json(cache[id].data);
+  }
+
+  try {
+    const res = await fetch(`${COINGECKO_API}/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+    if (!res.ok) throw new Error('Failed to fetch');
+    const data = await res.json();
+    cache[id] = { data, timestamp: Date.now() };
+    return NextResponse.json(data);
+  } catch (e) {
+    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+  }
+}

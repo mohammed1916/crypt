@@ -1,40 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
+# Cryptocurrency Dashboard (MacV AI Frontend Engineer Intern Assignment)
+
+A full-featured cryptocurrency dashboard built with Next.js 14+ (App Router), TypeScript, Tailwind CSS, shadcn/ui, and react-chartjs-2. Deployed on Vercel.
+
+## Features
+- **Home page**: Paginated table (50 per page) of cryptocurrencies from CoinGecko, with search, filters, loading skeletons, and error/empty states.
+- **Coin Detail page**: Price, market cap, volume, rank, supply, and interactive chart (24h, 7d, 30d, 90d).
+- **Watchlist**: ⭐ Favorite coins, persisted in localStorage, with live price updates.
+- **API Proxy**: Next.js API routes proxy CoinGecko endpoints, with error handling and optional in-memory caching.
+- **Responsive UI**: Built with Tailwind CSS and shadcn/ui.
+- **Reusable Components**: Modular, maintainable codebase.
+
+## Tech Stack
+- Next.js 14+ (App Router)
+- TypeScript
+- Tailwind CSS + shadcn/ui
+- react-chartjs-2
+- State: useState, useEffect, localStorage
 
 ## Getting Started
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Create `.env.local` and add your CoinGecko API key if needed.
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-First, run the development server:
+## Deployment
+- Ready for Vercel deployment. See `vercel.json` for config.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/route.ts`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## API Routes
-
-This directory contains example API routes for the headless API app.
-
-For more details, see [route.js file convention](https://nextjs.org/docs/app/api-reference/file-conventions/route).
+## Assignment Notes
+- See assignment prompt for detailed requirements and features.
