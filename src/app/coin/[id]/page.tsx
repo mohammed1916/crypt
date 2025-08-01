@@ -18,6 +18,7 @@ import {
 } from "chart.js";
 import Link from "next/link";
 import CryptoTable from "@/components/home/CryptoTable";
+import Select from "react-select";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
@@ -41,6 +42,8 @@ export default function CoinDetailPage() {
   const [compareLoading, setCompareLoading] = useState(false);
   const [compareError, setCompareError] = useState("");
   const [showXAxis, setShowXAxis] = useState(true);
+  const [compareSelection, setCompareSelection] = useState<any[]>([]);
+  const [compareChartData, setCompareChartData] = useState<any[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -83,23 +86,31 @@ export default function CoinDetailPage() {
     return () => { didCancel = true; };
   }, [id, range]);
 
-  // Fetch 50 coins for comparison if needed
+  // Fetch 50 coins for multi-select options
   useEffect(() => {
-    if (showCompare) {
-      setCompareLoading(true);
-      setCompareError("");
-      fetch("/api/coins?page=1")
-        .then((res) => res.json())
-        .then((data) => {
-          setCompareCoins(data);
-          setCompareLoading(false);
-        })
-        .catch(() => {
-          setCompareError("Failed to load comparison data");
-          setCompareLoading(false);
-        });
+    fetch("/api/coins?page=1")
+      .then((res) => res.json())
+      .then((data) => {
+        setCompareCoins(data);
+      });
+  }, []);
+
+  // Fetch chart data for selected coins
+  useEffect(() => {
+    async function fetchCompareCharts() {
+      if (!compareSelection.length) {
+        setCompareChartData([]);
+        return;
+      }
+      const results = await Promise.all(compareSelection.map(async (coin: any) => {
+        const res = await fetch(`/api/coin/${coin.value}/market_chart?days=${range}`);
+        const data = await res.json();
+        return { id: coin.value, name: coin.label, data };
+      }));
+      setCompareChartData(results);
     }
-  }, [showCompare]);
+    fetchCompareCharts();
+  }, [compareSelection, range]);
 
   if (loading) {
     return (
@@ -204,7 +215,17 @@ export default function CoinDetailPage() {
               </div>
             </div>
           </div>
-          <div className="flex mb-2 justify-end">
+          <div className="flex mb-2 justify-end items-center gap-2">
+            <div className="w-64">
+              <Select
+                isMulti
+                options={compareCoins.filter(c => c.id !== id).map((c: any) => ({ value: c.id, label: c.name }))}
+                value={compareSelection}
+                onChange={setCompareSelection}
+                placeholder="Compare coins on chart..."
+                classNamePrefix="react-select"
+              />
+            </div>
             <div className="flex gap-2">
               {CHART_RANGES.map((r) => (
                 <Button
@@ -222,13 +243,48 @@ export default function CoinDetailPage() {
             <LoadingSkeleton className="h-64 w-full" />
           ) : chart ? (
             <>
-              <Line data={chart} options={{
+              <Line data={{
+                ...chart,
+                datasets: [
+                  chart.datasets[0],
+                  ...compareChartData.map((c, i) => ({
+                    label: c.name + " Price (USD)",
+                    data: (function() {
+                      // Align data points by date label
+                      const baseLabels = chart.labels;
+                      const dayMap = new Map();
+                      if (!c.data || !Array.isArray(c.data.prices)) {
+                        // Defensive: if no data, fill with nulls
+                        return baseLabels.map(() => null);
+                      }
+                      if (range === "1") {
+                        c.data.prices.forEach((p: [number, number]) => {
+                          const d = new Date(p[0]);
+                          const label = d.getHours().toString().padStart(2, "0") + ":" + d.getMinutes().toString().padStart(2, "0");
+                          dayMap.set(label, p[1]);
+                        });
+                      } else {
+                        c.data.prices.forEach((p: [number, number]) => {
+                          const d = new Date(p[0]);
+                          const label = d.toLocaleDateString();
+                          dayMap.set(label, p[1]);
+                        });
+                      }
+                      return baseLabels.map((label: string) => dayMap.get(label) ?? null);
+                    })(),
+                    borderColor: `hsl(${(i * 60 + 120) % 360}, 70%, 50%)`,
+                    backgroundColor: `rgba(${(i * 60 + 120) % 360}, 130, 246, 0.1)`,
+                    fill: false,
+                    tension: 0.3,
+                  }))
+                ]
+              }} options={{
                 responsive: true,
                 plugins: { legend: { display: true, position: "top" } },
-                scales: { x: { display: showXAxis, title: { display: showXAxis, text: "Date" } } }
+                scales: { x: { display: showXAxis, title: { display: showXAxis, text: range === "1" ? "Hour" : "Date" } } }
               }} />
               <div className="flex justify-end mt-2">
-                <Button variant="ghost" size="sm" onClick={() => setShowXAxis(x => !x)}>
+                <Button variant="outline" size="sm" onClick={() => setShowXAxis(x => !x)}>
                   {showXAxis ? "Hide X-Axis" : "Show X-Axis"}
                 </Button>
               </div>
