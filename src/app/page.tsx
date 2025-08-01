@@ -20,7 +20,6 @@ export default function HomePage() {
     setError("");
     const params = new URLSearchParams({
       page: page.toString(),
-      ...(search && { ids: search }),
     });
     fetch(`/api/coins?${params.toString()}`)
       .then((res) => res.json())
@@ -32,7 +31,7 @@ export default function HomePage() {
         setError("Failed to load data");
         setLoading(false);
       });
-  }, [page, search]);
+  }, [page]);
 
   return (
     <main className="max-w-6xl mx-auto p-4">
@@ -45,7 +44,27 @@ export default function HomePage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        {/* Filters can be added here */}
+        <input
+          type="number"
+          placeholder="Min 24h %"
+          className="input input-bordered w-full md:w-32"
+          value={filters.percent}
+          onChange={(e) => setFilters(f => ({ ...f, percent: e.target.value }))}
+        />
+        <input
+          type="number"
+          placeholder="Min Volume"
+          className="input input-bordered w-full md:w-32"
+          value={filters.volume}
+          onChange={(e) => setFilters(f => ({ ...f, volume: e.target.value }))}
+        />
+        <input
+          type="number"
+          placeholder="Max Rank"
+          className="input input-bordered w-full md:w-32"
+          value={filters.rank}
+          onChange={(e) => setFilters(f => ({ ...f, rank: e.target.value }))}
+        />
       </div>
       {loading ? (
         <LoadingSkeleton className="h-32" />
@@ -54,7 +73,7 @@ export default function HomePage() {
       ) : coins.length === 0 ? (
         <div className="text-muted-foreground">No coins found.</div>
       ) : (
-        <CryptoTable coins={coins} page={page} setPage={setPage} />
+        <CryptoTable coins={coins} page={page} setPage={setPage} search={search} filters={filters} />
       )}
     </main>
   );

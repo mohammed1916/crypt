@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Star } from "lucide-react";
 
 interface CryptoTableProps {
   coins: any[];
   page: number;
   setPage: (page: number) => void;
+  search?: string;
+  filters?: {
+    percent?: string;
+    volume?: string;
+    rank?: string;
+  };
 }
 
 const PAGE_SIZE = 50;
 
-const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage }) => {
+const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search = "", filters = {} }) => {
   const watchlist = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("watchlist") || "[]") : [];
   const toggleWatchlist = (id: string) => {
     let wl = JSON.parse(localStorage.getItem("watchlist") || "[]");
@@ -21,6 +27,28 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage }) => {
     localStorage.setItem("watchlist", JSON.stringify(wl));
     window.location.reload();
   };
+
+  // Client-side search and filters
+  const filteredCoins = useMemo(() => {
+    let filtered = coins;
+    if (search) {
+      const s = search.toLowerCase();
+      filtered = filtered.filter(
+        (c) => c.name.toLowerCase().includes(s) || c.symbol.toLowerCase().includes(s)
+      );
+    }
+    if (filters.rank) {
+      filtered = filtered.filter((c) => c.market_cap_rank && c.market_cap_rank <= Number(filters.rank));
+    }
+    if (filters.percent) {
+      filtered = filtered.filter((c) => Math.abs(c.price_change_percentage_24h) >= Number(filters.percent));
+    }
+    if (filters.volume) {
+      filtered = filtered.filter((c) => c.total_volume && c.total_volume >= Number(filters.volume));
+    }
+    return filtered;
+  }, [coins, search, filters]);
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-card rounded-lg shadow">
@@ -36,7 +64,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage }) => {
           </tr>
         </thead>
         <tbody>
-          {coins.map((coin) => (
+          {filteredCoins.map((coin) => (
             <tr key={coin.id} className="border-b hover:bg-muted">
               <td className="p-2">{coin.market_cap_rank}</td>
               <td className="p-2 flex items-center gap-2">
@@ -74,7 +102,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage }) => {
         <button
           className="btn btn-sm"
           onClick={() => setPage(page + 1)}
-          disabled={coins.length < PAGE_SIZE}
+          disabled={filteredCoins.length < PAGE_SIZE}
         >
           Next
         </button>
