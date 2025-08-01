@@ -4,6 +4,8 @@ const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins';
 const CACHE_DURATION = 60; // seconds
 let cache: { [key: string]: { data: any; timestamp: number } } = {};
 
+const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY;
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -11,12 +13,13 @@ export async function GET(
   const { id } = await context.params;
   const { searchParams } = new URL(req.url);
   const days = searchParams.get('days') || '1';
-  // Only set interval if days > 1, otherwise omit it to avoid CoinGecko error
-  const interval = days === '1' ? undefined : searchParams.get('interval') || 'hourly';
+  // Do not set interval param; let CoinGecko choose granularity automatically
+  let interval: string | undefined = undefined;
   if (!id) {
+    console.error('Missing coin id');
     return NextResponse.json({ error: 'Missing coin id' }, { status: 400 });
   }
-  const cacheKey = `${id}-${days}-${interval || 'none'}`;
+  const cacheKey = `${id}-${days}`;
   if (
     cache[cacheKey] &&
     Date.now() - cache[cacheKey].timestamp < CACHE_DURATION * 1000
@@ -25,16 +28,28 @@ export async function GET(
   }
   try {
     let url = `${COINGECKO_API}/${id}/market_chart?vs_currency=usd&days=${days}`;
-    if (interval) url += `&interval=${interval}`;
-    const res = await fetch(url);
+    // Do not add interval param
+    console.log('Fetching CoinGecko:', url, 'for id:', id);
+    const headers: Record<string, string> = {};
+    if (COINGECKO_API_KEY) {
+      headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
+    }
+    const res = await fetch(url, { headers });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      return NextResponse.json({ error: err.error || 'Failed to fetch' }, { status: res.status });
+      let errMsg = 'Failed to fetch';
+      let err = {};
+      try {
+        err = await res.json();
+        if ((err as any)?.error) errMsg = (err as any).error;
+      } catch {}
+      console.error('CoinGecko error:', err, 'Status:', res.status);
+      return NextResponse.json({ error: errMsg, status: res.status, url, id, details: err }, { status: res.status });
     }
     const data = await res.json();
     cache[cacheKey] = { data, timestamp: Date.now() };
     return NextResponse.json(data);
   } catch (e) {
-    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+    console.error('Fetch error:', e);
+    return NextResponse.json({ error: 'Failed to fetch data', details: e instanceof Error ? e.message : e }, { status: 500 });
   }
 }
