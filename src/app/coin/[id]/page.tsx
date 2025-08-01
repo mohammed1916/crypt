@@ -150,6 +150,17 @@ function CoinDetailPageInner() {
     return () => { cancelled = true; };
   }, [compareSelection, range]);
 
+  useEffect(() => {
+    // Set navbar heading to coin name or fallback
+    const heading = coin?.name ? `${coin.name} (${coin.symbol?.toUpperCase()})` : "Coin Details";
+    const el = document.getElementById("navbar-heading");
+    if (el) el.textContent = heading;
+    return () => {
+      // Restore default heading on unmount
+      if (el) el.textContent = "Cryptocurrency Prices";
+    };
+  }, [coin]);
+
   if (loading) {
     return (
       <main className="max-w-3xl mx-auto p-4">

@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import CryptoTable from "@/components/home/CryptoTable";
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import FormInput from "@/components/ui/FormInput";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Switch } from "@/components/ui/switch";
 
 export default function HomePage() {
   const [coins, setCoins] = useState<any[]>([]);
@@ -15,6 +18,7 @@ export default function HomePage() {
     volume: "",
     rank: "",
   });
+  const [watchEnabled, setWatchEnabled] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -44,36 +48,42 @@ export default function HomePage() {
 
   return (
     <main className="max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Cryptocurrency Prices</h1>
-      <div className="mb-4 flex flex-col md:flex-row gap-2 md:items-center">
-        <input
-          type="text"
-          placeholder="Search by name or symbol..."
-          className="input input-bordered w-full md:w-64"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <input
+      <div className="mb-4 acrylic-card shadow-sm p-4 flex flex-col md:flex-row gap-4 md:items-center border border-border">
+        <div className="relative w-full md:w-64">
+          <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <FormInput
+            type="text"
+            placeholder="Search by name or symbol..."
+            className="p-[8px] rounded-lg pl-10 w-full md:w-64 focus:ring-2 focus:ring-primary focus:border-primary transition"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <FormInput
           type="number"
           placeholder="Min 24h %"
-          className="input input-bordered w-full md:w-32"
+          className="p-[8px] rounded-lg w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.percent}
           onChange={(e) => setFilters(f => ({ ...f, percent: e.target.value }))}
         />
-        <input
+        <FormInput
           type="number"
           placeholder="Min 24h Volume"
-          className="input input-bordered w-full md:w-48"
+          className="p-[8px] rounded-lg w-full md:w-48 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.volume}
           onChange={(e) => setFilters(f => ({ ...f, volume: e.target.value }))}
         />
-        <input
+        <FormInput
           type="number"
           placeholder="Max Rank"
-          className="input input-bordered w-full md:w-32"
+          className="p-[8px] rounded-lg w-full md:w-32 focus:ring-2 focus:ring-primary focus:border-primary transition"
           value={filters.rank}
           onChange={(e) => setFilters(f => ({ ...f, rank: e.target.value }))}
         />
+        <div className="flex items-center gap-2 ml-auto">
+          <Switch checked={watchEnabled} onCheckedChange={setWatchEnabled} id="watch-toggle" />
+          <label htmlFor="watch-toggle" className="text-sm text-muted-foreground select-none cursor-pointer">Watch View</label>
+        </div>
       </div>
       {loading ? (
         <LoadingSkeleton className="h-32" />
@@ -82,7 +92,7 @@ export default function HomePage() {
       ) : coins.length === 0 ? (
         <div className="text-muted-foreground">No coins found.</div>
       ) : (
-        <CryptoTable coins={coins} page={page} setPage={setPage} search={debouncedSearch} filters={filters} />
+        <CryptoTable coins={Array.isArray(coins) ? coins : []} page={page} setPage={setPage} search={debouncedSearch} filters={filters} watchEnabled={watchEnabled} />
       )}
     </main>
   );
