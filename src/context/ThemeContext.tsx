@@ -11,17 +11,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  // Default to system preference, fallback to "light"
-  const getDefaultTheme = (): ThemeMode => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const stored = window.localStorage.getItem("theme-mode") as ThemeMode | null;
-      if (stored === "light" || stored === "dark" || stored === "acrylic") return stored;
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-    }
-    return "light";
-  };
+  // Default to "light" for SSR
+  const [theme, setThemeState] = useState<ThemeMode>("light");
 
-  const [theme, setThemeState] = useState<ThemeMode>(getDefaultTheme());
+  // On mount, sync with localStorage or system preference
+  useEffect(() => {
+    const stored = window.localStorage.getItem("theme-mode") as ThemeMode | null;
+    if (stored === "light" || stored === "dark" || stored === "acrylic") {
+      setThemeState(stored);
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      setThemeState("dark");
+    }
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem("theme-mode", theme);

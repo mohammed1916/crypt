@@ -14,13 +14,11 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 	const { theme, setTheme } = useTheme();
 
 	React.useEffect(() => {
-		if (typeof window !== "undefined") {
-			document.documentElement.classList.remove("light", "dark", "acrylic");
-			if (theme === "light" || theme === "dark" || theme === "acrylic") {
-				document.documentElement.classList.add(theme);
-			}
-			localStorage.setItem("theme-mode", theme);
+		document.documentElement.classList.remove("light", "dark", "acrylic");
+		if (theme === "light" || theme === "dark" || theme === "acrylic") {
+			document.documentElement.classList.add(theme);
 		}
+		localStorage.setItem("theme-mode", theme);
 	}, [theme]);
 
 	return (
