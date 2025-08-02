@@ -12,16 +12,17 @@ const themes = [
 
 export function ThemeSwitcher({ className = "" }: { className?: string }) {
 	const { theme, setTheme } = useTheme();
+	const [isMounted, setIsMounted] = React.useState(false);
+	React.useEffect(() => { setIsMounted(true); }, []);
 
 	React.useEffect(() => {
-		if (typeof window !== "undefined") {
-			document.documentElement.classList.remove("light", "dark", "acrylic");
-			if (theme === "light" || theme === "dark" || theme === "acrylic") {
-				document.documentElement.classList.add(theme);
-			}
-			localStorage.setItem("theme-mode", theme);
+		if (!isMounted) return;
+		document.documentElement.classList.remove("light", "dark", "acrylic");
+		if (theme === "light" || theme === "dark" || theme === "acrylic") {
+			document.documentElement.classList.add(theme);
 		}
-	}, [theme]);
+		localStorage.setItem("theme-mode", theme);
+	}, [theme, isMounted]);
 
 	return (
 		<div className={`flex items-center gap-2 ${className}`}>

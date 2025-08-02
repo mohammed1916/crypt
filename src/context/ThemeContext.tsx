@@ -11,22 +11,30 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  // Default to system preference, fallback to "light"
-  const getDefaultTheme = (): ThemeMode => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const stored = window.localStorage.getItem("theme-mode") as ThemeMode | null;
-      if (stored === "light" || stored === "dark" || stored === "acrylic") return stored;
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-    }
-    return "light";
-  };
+  // Default to "light" for SSR
+  const [theme, setThemeState] = useState<ThemeMode>("light");
+  const [isMounted, setIsMounted] = useState(false);
 
-  const [theme, setThemeState] = useState<ThemeMode>(getDefaultTheme());
+  // On mount, sync with localStorage or system preference
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
+    const stored = window.localStorage.getItem("theme-mode") as ThemeMode | null;
+    if (stored === "light" || stored === "dark" || stored === "acrylic") {
+      setThemeState(stored);
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      setThemeState("dark");
+    }
+  }, [isMounted]);
+
+  useEffect(() => {
+    if (!isMounted) return;
     window.localStorage.setItem("theme-mode", theme);
     document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
+  }, [theme, isMounted]);
 
   const setTheme = (mode: ThemeMode) => {
     setThemeState(mode);

@@ -5,6 +5,7 @@ import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 import FormInput from "@/components/ui/FormInput";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/toast";
 
 export default function HomePage() {
   const [coins, setCoins] = useState<any[]>([]);
@@ -19,6 +20,7 @@ export default function HomePage() {
     rank: "",
   });
   const [watchEnabled, setWatchEnabled] = useState(true);
+  const showToast = useToast();
 
   useEffect(() => {
     setLoading(true);
@@ -28,7 +30,12 @@ export default function HomePage() {
     });
     console.log("Fetching page:", page); // Debug: log current page
     fetch(`/api/coins?${params.toString()}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 500) {
+          showToast("Connection to Internet Lost", "error");
+        }
+        return res.json();
+      })
       .then((data) => {
         setCoins(data);
         setLoading(false);
