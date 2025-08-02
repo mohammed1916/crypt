@@ -1,23 +1,23 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface AcrylicModeContextType {
+interface ThemeContextType {
   isAcrylicMode: boolean;
   setAcrylicMode: (value: boolean) => void;
 }
 
-const AcrylicModeContext = createContext<AcrylicModeContextType | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const useAcrylicMode = () => {
-  const context = useContext(AcrylicModeContext);
-  if (!context) throw new Error("useAcrylicMode must be used within AcrylicModeProvider");
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
   return context;
 };
 
-export const AcrylicModeProvider = ({ children }: { children: ReactNode }) => {
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isAcrylicMode, setAcrylicMode] = useState(false);
   return (
-    <AcrylicModeContext.Provider value={{ isAcrylicMode, setAcrylicMode }}>
+    <ThemeContext.Provider value={{ isAcrylicMode, setAcrylicMode }}>
       {children}
-    </AcrylicModeContext.Provider>
+    </ThemeContext.Provider>
   );
 };

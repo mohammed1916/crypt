@@ -20,7 +20,6 @@ import Link from "next/link";
 import CryptoTable from "@/components/home/CryptoTable";
 import Select from "react-select";
 import { ToastProvider, useToast } from "@/components/ui/toast";
-import { AcrylicModeProvider } from "@/context/AcrylicModeContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
@@ -36,9 +35,7 @@ export default function CoinDetailPage() {
   return (
     <ToastProvider>
       <ThemeProvider>
-        <AcrylicModeProvider>
-          <CoinDetailPageInner />
-        </AcrylicModeProvider>
+        <CoinDetailPageInner />
       </ThemeProvider>
     </ToastProvider>
   );
