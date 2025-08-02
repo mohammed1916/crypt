@@ -2,6 +2,7 @@
 import * as React from "react";
 import { ThemeIcon } from "@/components/ui/ThemeIcon";
 import { useTheme } from "@/context/ThemeContext";
+import { Button } from "@/components/ui/button";
 
 const themes = [
 	{ value: "light", label: "Light" },
@@ -25,19 +26,16 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 	return (
 		<div className={`flex items-center gap-2 ${className}`}>
 			{themes.map((t) => (
-				<button
+				<Button
 					key={t.value}
-					className={
-						[
-							"rounded-full p-2 border border-border bg-card hover:bg-accent transition focus:outline-none focus:ring-2 focus:ring-primary",
-							theme === t.value ? "ring-2 ring-primary" : "",
-						].join(" ")
-					}
+					variant={theme === t.value ? (t.value as any) : "outline"}
+					size="sm"
 					aria-label={t.label + " theme"}
 					onClick={() => setTheme(t.value as any)}
+					className={theme === t.value ? "ring-2 ring-primary" : ""}
 				>
 					<ThemeIcon theme={t.value as any} />
-				</button>
+				</Button>
 			))}
 		</div>
 	);
