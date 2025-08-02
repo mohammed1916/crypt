@@ -34,9 +34,7 @@ const CHART_RANGES = [
 export default function CoinDetailPage() {
   return (
     <ToastProvider>
-      <ThemeProvider>
-        <CoinDetailPageInner />
-      </ThemeProvider>
+      <CoinDetailPageInner />
     </ToastProvider>
   );
 }
