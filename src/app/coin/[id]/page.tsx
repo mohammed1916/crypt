@@ -278,32 +278,36 @@ function CoinDetailPageInner() {
         <CardHeader className="flex flex-row items-center gap-4">
           <img src={coin.image?.large || coin.image?.thumb} alt={coin.name} className="w-12 h-12" />
           <div>
-            <CardTitle className="text-2xl">{coin.name} ({coin.symbol?.toUpperCase()})</CardTitle>
-            <div className="text-gray-500 text-sm">Rank #{coin.market_cap_rank}</div>
+            <CardTitle className="text-2xl">
+              {coin.name ? coin.name : <span className="text-muted-foreground">Try again later</span>} ({coin.symbol?.toUpperCase() ?? <span className="text-muted-foreground">Try again later</span>})
+            </CardTitle>
+            <div className="text-gray-500 text-sm">
+              Rank #{coin.market_cap_rank ?? <span className="text-muted-foreground">Try again later</span>}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             <div>
               <div className="text-gray-500 text-xs">Price</div>
-              <div className="font-semibold text-lg">${coin.market_data?.current_price?.usd?.toLocaleString()}</div>
+              <div className="font-semibold text-lg">{coin.market_data?.current_price?.usd?.toLocaleString() ?? <span className="text-muted-foreground">Try again later</span>}</div>
             </div>
             <div>
               <div className="text-gray-500 text-xs">Market Cap</div>
-              <div className="font-semibold">${coin.market_data?.market_cap?.usd?.toLocaleString()}</div>
+              <div className="font-semibold">{coin.market_data?.market_cap?.usd?.toLocaleString() ?? <span className="text-muted-foreground">Try again later</span>}</div>
             </div>
             <div>
               <div className="text-gray-500 text-xs">24h Volume</div>
-              <div className="font-semibold">${coin.market_data?.total_volume?.usd?.toLocaleString()}</div>
+              <div className="font-semibold">{coin.market_data?.total_volume?.usd?.toLocaleString() ?? <span className="text-muted-foreground">Try again later</span>}</div>
             </div>
             <div>
               <div className="text-gray-500 text-xs">Circulating Supply</div>
-              <div className="font-semibold">{coin.market_data?.circulating_supply?.toLocaleString()}</div>
+              <div className="font-semibold">{coin.market_data?.circulating_supply?.toLocaleString() ?? <span className="text-muted-foreground">Try again later</span>}</div>
             </div>
             <div>
               <div className="text-gray-500 text-xs">24h Change</div>
               <div className={`font-semibold ${coin.market_data?.price_change_percentage_24h >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {coin.market_data?.price_change_percentage_24h?.toFixed(2)}%
+                {coin.market_data?.price_change_percentage_24h?.toFixed(2) ?? <span className="text-muted-foreground">Try again later</span>}%
               </div>
             </div>
           </div>
