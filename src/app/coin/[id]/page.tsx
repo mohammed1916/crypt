@@ -57,6 +57,8 @@ function CoinDetailPageInner() {
   const [showXAxis, setShowXAxis] = useState(true);
   const [compareSelection, setCompareSelection] = useState<any[]>([]);
   const [compareChartData, setCompareChartData] = useState<any[]>([]);
+  const [compareVisible, setCompareVisible] = useState(false);
+  const [compareAnim, setCompareAnim] = useState('');
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -189,6 +191,17 @@ function CoinDetailPageInner() {
       if (el) el.textContent = "Cryptocurrency Prices";
     };
   }, [coin]);
+
+  useEffect(() => {
+    if (showCompare) {
+      setCompareVisible(true);
+      setCompareAnim('animate-fade-in');
+    } else if (compareVisible) {
+      setCompareAnim('animate-fade-out');
+      const timeout = setTimeout(() => setCompareVisible(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [showCompare]);
 
   if (loading) {
     return (
@@ -383,8 +396,8 @@ function CoinDetailPageInner() {
             {showCompare ? "Hide" : "Yes"}
           </Button>
         </div>
-        {showCompare && (
-          <div className="mb-6">
+        {compareVisible && (
+          <div className={`mb-6 transition-all duration-500 ease-in-out opacity-100 translate-y-0 ${compareAnim}`}>
             {compareLoading ? (
               <LoadingSkeleton className="h-32" />
             ) : compareError ? (
