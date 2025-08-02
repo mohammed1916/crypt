@@ -99,4 +99,13 @@
     border: 1.5px solid rgba(255,255,255,0.13);
     box-shadow: 0 3px 18px 0 rgba(0,0,0,0.13);
   }
+  .acrylic .acrylic-card-noborderradius {
+    background: rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    backdrop-filter: blur(14px) saturate(1.15);
+    border: 1.5px solid rgba(255,255,255,0.13);
+    box-shadow: 0 3px 18px 0 rgba(0,0,0,0.13);
+  }
+
+
 }
