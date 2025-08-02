@@ -4,7 +4,6 @@ import WatchlistTable from "@/components/watchlist/WatchlistTable";
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 const getWatchlist = () => {
-  if (typeof window === "undefined") return [];
   try {
     return JSON.parse(localStorage.getItem("watchlist") || "[]");
   } catch {
@@ -16,8 +15,14 @@ export default function WatchlistPage() {
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [coins, setCoins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
     const wl = getWatchlist();
     setWatchlist(wl);
     if (wl.length === 0) {
@@ -39,7 +44,7 @@ export default function WatchlistPage() {
         .then(setCoins);
     }, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isMounted]);
 
   return (
     <main className="max-w-4xl mx-auto p-4">

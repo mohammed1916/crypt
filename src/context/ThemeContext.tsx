@@ -13,21 +13,28 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // Default to "light" for SSR
   const [theme, setThemeState] = useState<ThemeMode>("light");
+  const [isMounted, setIsMounted] = useState(false);
 
   // On mount, sync with localStorage or system preference
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
     const stored = window.localStorage.getItem("theme-mode") as ThemeMode | null;
     if (stored === "light" || stored === "dark" || stored === "acrylic") {
       setThemeState(stored);
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setThemeState("dark");
     }
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
     window.localStorage.setItem("theme-mode", theme);
     document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
+  }, [theme, isMounted]);
 
   const setTheme = (mode: ThemeMode) => {
     setThemeState(mode);

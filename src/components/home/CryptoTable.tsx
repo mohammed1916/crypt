@@ -19,12 +19,16 @@ const PAGE_SIZE = 50;
 
 const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search = "", filters = {}, watchEnabled = true }) => {
   const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setWatchlist(JSON.parse(localStorage.getItem("watchlist") || "[]"));
-    }
+    setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    setWatchlist(JSON.parse(localStorage.getItem("watchlist") || "[]"));
+  }, [isMounted]);
 
   const toggleWatchlist = (id: string) => {
     let wl = [...watchlist];
