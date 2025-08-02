@@ -73,7 +73,9 @@
     inset: 0;
     z-index: -100;
     pointer-events: none;
-    background: linear-gradient(120deg, #7f7fd5 0%, #86a8e7 40%, #91eac9 70%, #f7971e 100%, #ffd200 120%);
+    /* background: linear-gradient(120deg, #7f7fd5 0%, #86a8e7 40%, #91eac9 70%, #f7971e 100%, #ffd200 120%); */
+    /* background: linear-gradient(120deg, #8F87F1 0%, #C68EFD 40%, #E9A5F1 70%, #FED2E2 100%); */
+    background: linear-gradient(120deg, #69247C 0%, #DA498D 40%, #FAC67A 70%, #F9E6CF 100%);
     background-size: 200% 200%;
     animation: acrylic-gradient-move 12s ease-in-out infinite;
     opacity: 0.85;
@@ -105,6 +107,9 @@
     backdrop-filter: blur(14px) saturate(1.15);
     border: 1.5px solid rgba(255,255,255,0.13);
     box-shadow: 0 3px 18px 0 rgba(0,0,0,0.13);
+  }
+  .acrylic, .acrylic .acrylic-container, .acrylic .acrylic-card, .acrylic .acrylic-card-noborderradius {
+    color: #fbfbff;
   }
 
 

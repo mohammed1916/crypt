@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { ThemeIcon } from "@/components/ui/ThemeIcon";
+import { useTheme } from "@/context/ThemeContext";
 
 const themes = [
 	{ value: "light", label: "Light" },
@@ -9,17 +10,7 @@ const themes = [
 ];
 
 export function ThemeSwitcher({ className = "" }: { className?: string }) {
-	const [theme, setTheme] = React.useState<string>("light");
-
-	// Sync theme from localStorage after mount to avoid hydration mismatch
-	React.useEffect(() => {
-		if (typeof window !== "undefined") {
-			const stored = localStorage.getItem("theme");
-			if (stored && stored !== theme) setTheme(stored);
-		}
-		// Only run on mount
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	const { theme, setTheme } = useTheme();
 
 	React.useEffect(() => {
 		if (typeof window !== "undefined") {
@@ -27,7 +18,7 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 			if (theme === "light" || theme === "dark" || theme === "acrylic") {
 				document.documentElement.classList.add(theme);
 			}
-			localStorage.setItem("theme", theme);
+			localStorage.setItem("theme-mode", theme);
 		}
 	}, [theme]);
 
@@ -36,11 +27,14 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 			{themes.map((t) => (
 				<button
 					key={t.value}
-					className={`rounded-full p-2 border border-border bg-card hover:bg-accent transition focus:outline-none focus:ring-2 focus:ring-primary ${
-						theme === t.value ? "ring-2 ring-primary" : ""
-					}`}
+					className={
+						[
+							"rounded-full p-2 border border-border bg-card hover:bg-accent transition focus:outline-none focus:ring-2 focus:ring-primary",
+							theme === t.value ? "ring-2 ring-primary" : "",
+						].join(" ")
+					}
 					aria-label={t.label + " theme"}
-					onClick={() => setTheme(t.value)}
+					onClick={() => setTheme(t.value as any)}
 				>
 					<ThemeIcon theme={t.value as any} />
 				</button>

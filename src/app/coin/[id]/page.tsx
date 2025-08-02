@@ -20,6 +20,8 @@ import Link from "next/link";
 import CryptoTable from "@/components/home/CryptoTable";
 import Select from "react-select";
 import { ToastProvider, useToast } from "@/components/ui/toast";
+import { AcrylicModeProvider } from "@/context/AcrylicModeContext";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
@@ -33,7 +35,11 @@ const CHART_RANGES = [
 export default function CoinDetailPage() {
   return (
     <ToastProvider>
-      <CoinDetailPageInner />
+      <ThemeProvider>
+        <AcrylicModeProvider>
+          <CoinDetailPageInner />
+        </AcrylicModeProvider>
+      </ThemeProvider>
     </ToastProvider>
   );
 }
@@ -54,6 +60,11 @@ function CoinDetailPageInner() {
   const [showXAxis, setShowXAxis] = useState(true);
   const [compareSelection, setCompareSelection] = useState<any[]>([]);
   const [compareChartData, setCompareChartData] = useState<any[]>([]);
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    console.log("Theme changed:", theme);
+  }, [theme]);
 
   function showApiErrorToast(res: Response, showToast: (msg: string, type?: "success"|"error"|"info") => void) {
     if (!res.ok) {
@@ -252,7 +263,7 @@ function CoinDetailPageInner() {
     <main className="max-w-3xl mx-auto p-4">
       <div className="mb-4">
         <Link href="/">
-          <Button variant="outline" size="sm">&larr; Back to List</Button>
+          <Button variant={theme === "acrylic" ? "acrylic" : "default"} size="sm">&larr; Back to List</Button>
         </Link>
       </div>
       <Card>
@@ -303,7 +314,7 @@ function CoinDetailPageInner() {
               {CHART_RANGES.map((r) => (
                 <Button
                   key={r.value}
-                  variant={range === r.value ? "default" : "outline"}
+                  variant={theme === "acrylic" ? "acrylic" : "default"}
                   size="sm"
                   onClick={() => setRange(r.value)}
                 >
@@ -357,7 +368,7 @@ function CoinDetailPageInner() {
                 scales: { x: { display: showXAxis, title: { display: showXAxis, text: range === "1" ? "Hour" : "Date" } } }
               }} />
               <div className="flex justify-end mt-2">
-                <Button variant="outline" size="sm" onClick={() => setShowXAxis(x => !x)}>
+                <Button variant={theme === "acrylic" ? "acrylic" : "outline"} size="sm" onClick={() => setShowXAxis(x => !x)}>
                   {showXAxis ? "Hide X-Axis" : "Show X-Axis"}
                 </Button>
               </div>
@@ -371,7 +382,7 @@ function CoinDetailPageInner() {
       <div className="mt-6 flex flex-col gap-2">
         <div>
           <span className="mr-2">Compare with other coins?</span>
-          <Button variant={showCompare ? "default" : "outline"} size="sm" onClick={() => setShowCompare(v => !v)}>
+          <Button variant={theme === "acrylic" ? "acrylic" : "default"} size="sm" onClick={() => setShowCompare(v => !v)}>
             {showCompare ? "Hide" : "Yes"}
           </Button>
         </div>
