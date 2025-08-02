@@ -19,7 +19,6 @@ const PAGE_SIZE = 50;
 
 const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search = "", filters = {}, watchEnabled = true }) => {
   const [watchlist, setWatchlist] = useState<string[]>([]);
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -75,49 +74,36 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ coins, page, setPage, search 
             </tr>
           </thead>
           <tbody>
-            {filteredCoins.map((coin, idx) => {
-              // Determine elevation class
-              let elevation = "";
-              if (hoveredIdx === idx) {
-                elevation = "z-10 shadow-4xl scale-[1.01]";
-              } else if (hoveredIdx === idx - 1 || hoveredIdx === idx + 1) {
-                elevation = "z-0 shadow-small scale-100";
-              } else {
-                elevation = "z-0 shadow-none scale-100";
-              }
-              return (
-                <tr
-                  key={coin.id}
-                  className={`border-b hover:bg-muted cursor-pointer transition-all duration-200 ${elevation}`}
-                  onMouseEnter={() => setHoveredIdx(idx)}
-                  onMouseLeave={() => setHoveredIdx(null)}
-                  onClick={() => window.location.href = `/coin/${coin.id}`}
-                >
-                  <td className="p-2">{coin.market_cap_rank}</td>
-                  <td className="p-2 flex items-center gap-2">
-                    <img src={coin.image} alt={coin.name} className="w-6 h-6" />
-                    <span>{coin.name}</span>
-                    <span className="text-muted-foreground text-xs">{coin.symbol.toUpperCase()}</span>
+            {filteredCoins.map((coin) => (
+              <tr
+                key={coin.id}
+                className="border-b cursor-pointer elevation-hover"
+                onClick={() => window.location.href = `/coin/${coin.id}`}
+              >
+                <td className="p-2">{coin.market_cap_rank}</td>
+                <td className="p-2 flex items-center gap-2">
+                  <img src={coin.image} alt={coin.name} className="w-6 h-6" />
+                  <span>{coin.name}</span>
+                  <span className="text-muted-foreground text-xs">{coin.symbol.toUpperCase()}</span>
+                </td>
+                <td className="p-2">${coin.current_price?.toLocaleString()}</td>
+                <td className={`p-2 ${coin.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>
+                  {coin.price_change_percentage_24h?.toFixed(2)}%
+                </td>
+                <td className="p-2">${coin.market_cap?.toLocaleString()}</td>
+                <td className="p-2">${coin.total_volume?.toLocaleString()}</td>
+                {watchEnabled && (
+                  <td className="p-2" onClick={e => e.stopPropagation()}>
+                    <button
+                      aria-label="Toggle watchlist"
+                      onClick={() => toggleWatchlist(coin.id)}
+                    >
+                      <Star className={`w-5 h-5 ${watchlist.includes(coin.id) ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                    </button>
                   </td>
-                  <td className="p-2">${coin.current_price?.toLocaleString()}</td>
-                  <td className={`p-2 ${coin.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>
-                    {coin.price_change_percentage_24h?.toFixed(2)}%
-                  </td>
-                  <td className="p-2">${coin.market_cap?.toLocaleString()}</td>
-                  <td className="p-2">${coin.total_volume?.toLocaleString()}</td>
-                  {watchEnabled && (
-                    <td className="p-2" onClick={e => e.stopPropagation()}>
-                      <button
-                        aria-label="Toggle watchlist"
-                        onClick={() => toggleWatchlist(coin.id)}
-                      >
-                        <Star className={`w-5 h-5 ${watchlist.includes(coin.id) ? "fill-yellow-400 text-yellow-400" : ""}`} />
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              );
-            })}
+                )}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

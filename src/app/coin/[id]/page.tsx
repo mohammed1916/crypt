@@ -407,7 +407,7 @@ function CoinDetailPageInner() {
                         ? ((c.current_price - coin.market_data.current_price.usd) / coin.market_data.current_price.usd) * 100
                         : null;
                       return (
-                        <tr key={c.id} className="border-b hover:bg-muted cursor-pointer" onClick={() => window.location.href = `/coin/${c.id}` }>
+                        <tr key={c.id} className="border-b cursor-pointer elevation-hover" onClick={() => window.location.href = `/coin/${c.id}` }>
                           <td className="p-2">{c.market_cap_rank}</td>
                           <td className="p-2 flex items-center gap-2">
                             <img src={c.image} alt={c.name} className="w-6 h-6" />
@@ -415,12 +415,8 @@ function CoinDetailPageInner() {
                             <span className="text-muted-foreground text-xs">{c.symbol.toUpperCase()}</span>
                           </td>
                           <td className="p-2">${c.current_price?.toLocaleString()}</td>
-                          <td className={`p-2 ${diff !== null ? (diff > 0 ? "text-green-600" : "text-red-600") : ""}`}>
-                            {diff !== null ? diff.toFixed(2) + "%" : "-"}
-                          </td>
-                          <td className={`p-2 ${c.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>
-                            {c.price_change_percentage_24h?.toFixed(2)}%
-                          </td>
+                          <td className={`p-2 ${diff !== null ? (diff > 0 ? "text-green-600" : "text-red-600") : ""}`}>{diff !== null ? diff.toFixed(2) + "%" : "-"}</td>
+                          <td className={`p-2 ${c.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>{c.price_change_percentage_24h?.toFixed(2)}%</td>
                         </tr>
                       );
                     })}

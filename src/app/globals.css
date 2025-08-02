@@ -111,6 +111,12 @@
   .acrylic, .acrylic .acrylic-container, .acrylic .acrylic-card, .acrylic .acrylic-card-noborderradius {
     color: #fbfbff;
   }
-
-
+  .elevation-hover {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .elevation-hover:hover {
+    box-shadow: 0 8px 32px rgba(60, 0, 180, 0.15), 0 1.5px 6px rgba(0,0,0,0.08);
+    transform: scale(1.01);
+    z-index: 10;
+  }
 }
