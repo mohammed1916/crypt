@@ -20,6 +20,7 @@ import Link from "next/link";
 import CryptoTable from "@/components/home/CryptoTable";
 import Select from "react-select";
 import { ToastProvider, useToast } from "@/components/ui/toast";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
@@ -54,6 +55,13 @@ function CoinDetailPageInner() {
   const [showXAxis, setShowXAxis] = useState(true);
   const [compareSelection, setCompareSelection] = useState<any[]>([]);
   const [compareChartData, setCompareChartData] = useState<any[]>([]);
+  const [compareVisible, setCompareVisible] = useState(false);
+  const [compareAnim, setCompareAnim] = useState('');
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    console.log("Theme changed:", theme);
+  }, [theme]);
 
   function showApiErrorToast(res: Response, showToast: (msg: string, type?: "success"|"error"|"info") => void) {
     if (!res.ok) {
@@ -182,6 +190,17 @@ function CoinDetailPageInner() {
     };
   }, [coin]);
 
+  useEffect(() => {
+    if (showCompare) {
+      setCompareVisible(true);
+      setCompareAnim('animate-fade-in');
+    } else if (compareVisible) {
+      setCompareAnim('animate-fade-out');
+      const timeout = setTimeout(() => setCompareVisible(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [showCompare]);
+
   if (loading) {
     return (
       <main className="max-w-3xl mx-auto p-4">
@@ -252,7 +271,7 @@ function CoinDetailPageInner() {
     <main className="max-w-3xl mx-auto p-4">
       <div className="mb-4">
         <Link href="/">
-          <Button variant="outline" size="sm">&larr; Back to List</Button>
+          <Button variant={theme === "acrylic" ? "acrylic" : "default"} size="sm">&larr; Back to List</Button>
         </Link>
       </div>
       <Card>
@@ -303,7 +322,7 @@ function CoinDetailPageInner() {
               {CHART_RANGES.map((r) => (
                 <Button
                   key={r.value}
-                  variant={range === r.value ? "default" : "outline"}
+                  variant={theme === "acrylic" ? "acrylic" : "default"}
                   size="sm"
                   onClick={() => setRange(r.value)}
                 >
@@ -357,7 +376,7 @@ function CoinDetailPageInner() {
                 scales: { x: { display: showXAxis, title: { display: showXAxis, text: range === "1" ? "Hour" : "Date" } } }
               }} />
               <div className="flex justify-end mt-2">
-                <Button variant="outline" size="sm" onClick={() => setShowXAxis(x => !x)}>
+                <Button variant={theme === "acrylic" ? "acrylic" : "outline"} size="sm" onClick={() => setShowXAxis(x => !x)}>
                   {showXAxis ? "Hide X-Axis" : "Show X-Axis"}
                 </Button>
               </div>
@@ -371,19 +390,19 @@ function CoinDetailPageInner() {
       <div className="mt-6 flex flex-col gap-2">
         <div>
           <span className="mr-2">Compare with other coins?</span>
-          <Button variant={showCompare ? "default" : "outline"} size="sm" onClick={() => setShowCompare(v => !v)}>
+          <Button variant={theme === "acrylic" ? "acrylic" : "default"} size="sm" onClick={() => setShowCompare(v => !v)}>
             {showCompare ? "Hide" : "Yes"}
           </Button>
         </div>
-        {showCompare && (
-          <div className="mb-6">
+        {compareVisible && (
+          <div className={`mb-6 transition-all duration-500 ease-in-out opacity-100 translate-y-0 ${compareAnim}`}>
             {compareLoading ? (
               <LoadingSkeleton className="h-32" />
             ) : compareError ? (
               <div className="text-destructive">{compareError}</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full bg-card rounded-lg shadow mb-4">
+                <table className="acrylic-card min-w-full bg-card rounded-lg shadow mb-4">
                   <thead>
                     <tr className="border-b">
                       <th className="p-2 text-left">#</th>
@@ -399,7 +418,7 @@ function CoinDetailPageInner() {
                         ? ((c.current_price - coin.market_data.current_price.usd) / coin.market_data.current_price.usd) * 100
                         : null;
                       return (
-                        <tr key={c.id} className="border-b hover:bg-muted cursor-pointer" onClick={() => window.location.href = `/coin/${c.id}` }>
+                        <tr key={c.id} className="border-b cursor-pointer elevation-hover" onClick={() => window.location.href = `/coin/${c.id}` }>
                           <td className="p-2">{c.market_cap_rank}</td>
                           <td className="p-2 flex items-center gap-2">
                             <img src={c.image} alt={c.name} className="w-6 h-6" />
@@ -407,12 +426,8 @@ function CoinDetailPageInner() {
                             <span className="text-muted-foreground text-xs">{c.symbol.toUpperCase()}</span>
                           </td>
                           <td className="p-2">${c.current_price?.toLocaleString()}</td>
-                          <td className={`p-2 ${diff !== null ? (diff > 0 ? "text-green-600" : "text-red-600") : ""}`}>
-                            {diff !== null ? diff.toFixed(2) + "%" : "-"}
-                          </td>
-                          <td className={`p-2 ${c.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>
-                            {c.price_change_percentage_24h?.toFixed(2)}%
-                          </td>
+                          <td className={`p-2 ${diff !== null ? (diff > 0 ? "text-green-600" : "text-red-600") : ""}`}>{diff !== null ? diff.toFixed(2) + "%" : "-"}</td>
+                          <td className={`p-2 ${c.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>{c.price_change_percentage_24h?.toFixed(2)}%</td>
                         </tr>
                       );
                     })}

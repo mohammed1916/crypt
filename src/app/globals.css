@@ -73,7 +73,9 @@
     inset: 0;
     z-index: -100;
     pointer-events: none;
-    background: linear-gradient(120deg, #7f7fd5 0%, #86a8e7 40%, #91eac9 70%, #f7971e 100%, #ffd200 120%);
+    /* background: linear-gradient(120deg, #7f7fd5 0%, #86a8e7 40%, #91eac9 70%, #f7971e 100%, #ffd200 120%); */
+    /* background: linear-gradient(120deg, #8F87F1 0%, #C68EFD 40%, #E9A5F1 70%, #FED2E2 100%); */
+    background: linear-gradient(120deg, #69247C 0%, #DA498D 40%, #FAC67A 70%, #F9E6CF 100%);
     background-size: 200% 200%;
     animation: acrylic-gradient-move 12s ease-in-out infinite;
     opacity: 0.85;
@@ -98,5 +100,49 @@
     border-radius: 0.85rem;
     border: 1.5px solid rgba(255,255,255,0.13);
     box-shadow: 0 3px 18px 0 rgba(0,0,0,0.13);
+  }
+  .acrylic .acrylic-card-noborderradius {
+    background: rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    backdrop-filter: blur(14px) saturate(1.15);
+    border: 1.5px solid rgba(255,255,255,0.13);
+    box-shadow: 0 3px 18px 0 rgba(0,0,0,0.13);
+  }
+  .acrylic, .acrylic .acrylic-container, .acrylic .acrylic-card, .acrylic .acrylic-card-noborderradius {
+    color: #fbfbff;
+  }
+  .elevation-hover {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .elevation-hover:hover {
+    box-shadow: 0 8px 32px rgba(60, 0, 180, 0.15), 0 1.5px 6px rgba(0,0,0,0.08);
+    transform: scale(1.01);
+    z-index: 10;
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease;
+  }
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+  }
+  .animate-fade-out {
+    animation: fade-out 0.5s ease;
   }
 }

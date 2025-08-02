@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="acrylic-card w-full flex flex-col md:flex-row items-center justify-between gap-2 p-4 border-t border-border bg-background text-sm mt-8">
+    <footer className="acrylic-card-noborderradius w-full flex flex-col md:flex-row items-center justify-between gap-2 p-4 border-t border-border bg-background text-sm mt-8">
       <span className="flex items-center gap-1">
         &copy; 2025 Mohammed Abdullah
       </span>
