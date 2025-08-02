@@ -383,7 +383,7 @@ function CoinDetailPageInner() {
               <div className="text-destructive">{compareError}</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full bg-card rounded-lg shadow mb-4">
+                <table className="acrylic-card min-w-full bg-card rounded-lg shadow mb-4">
                   <thead>
                     <tr className="border-b">
                       <th className="p-2 text-left">#</th>

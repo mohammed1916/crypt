@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <NavbarHeading />
           <ThemeSwitcher />
         </header>
-        <div className=" min-h-[80vh]">{children}</div>
+        <div className="backdrop-blur-2xl min-h-[80vh]">{children}</div>
         <Footer />
       </body>
     </html>
