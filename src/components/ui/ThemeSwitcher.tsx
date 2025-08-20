@@ -29,7 +29,7 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 
 							const btnRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
 							const [liquid, setLiquid] = React.useState<{ left: number; width: number; height: number } | null>(null);
-							const [ripples, setRipples] = React.useState<Array<{ x: number; y: number; radius: number }>>([]);
+								// Ripple effect removed
 
 										React.useEffect(() => {
 											const idx = themes.findIndex(t => t.value === theme);
@@ -43,28 +43,6 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 														width: rect.width,
 														height: rect.height
 													});
-													// Ripples for all buttons
-													const newRipples = btnRefs.current.map((b, i) => {
-														if (!b) return null;
-														const r = b.getBoundingClientRect();
-														return {
-															x: (r.left - parentRect.left) + r.width / 2,
-															y: r.height / 2,
-															radius: 0
-														};
-													}).filter(Boolean) as Array<{ x: number; y: number; radius: number }>;
-													setRipples(newRipples);
-													setTimeout(() => {
-														setRipples(rs => rs.map((r, i) => {
-															const btn = btnRefs.current[i];
-															if (!btn) return { ...r, radius: 0 };
-															const rect = btn.getBoundingClientRect();
-															return { ...r, radius: rect.width * 0.7 };
-														}));
-													}, 10);
-													setTimeout(() => {
-														setRipples([]);
-													}, 400);
 												}
 											}
 										}, [theme, isMounted]);
@@ -95,28 +73,6 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 																			/>
 																		)}
 																	</AnimatePresence>
-																	{/* Ripple effect for all buttons */}
-																	{liquid && (
-																		<svg
-																			className="absolute top-0 left-0 z-0 pointer-events-none"
-																			width={liquid.width}
-																			height={liquid.height}
-																			style={{ x: liquid.left, y: 0, overflow: 'visible' }}
-																		>
-																			{ripples.map((r, i) => (
-																				<motion.circle
-																					key={i}
-																					cx={r.x - liquid.left}
-																					cy={r.y}
-																					r={r.radius}
-																					fill="rgba(59,130,246,0.15)"
-																					initial={{ r: 0, opacity: 0.7 }}
-																					animate={{ r: r.radius, opacity: 0 }}
-																					transition={{ duration: 0.4, ease: "easeOut" }}
-																				/>
-																			))}
-																		</svg>
-																	)}
 									{themes.map((t, idx) => (
 										<motion.div
 											key={t.value}
