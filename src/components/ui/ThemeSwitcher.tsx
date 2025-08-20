@@ -95,7 +95,7 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 																	size="lg"
 																	aria-label={t.label + " theme"}
 																	onClick={() => setTheme(t.value as any)}
-																	className={`theme-btn theme-btn-${t.value} transition-all duration-300 font-semibold px-6 py-3 rounded-xl border-2 ${theme === t.value ? "ring-4 ring-[var(--theme-switcher-ring)]" : "hover:ring-2 hover:ring-[var(--theme-switcher-ring)]"}`}
+																	  className={`theme-btn theme-btn-${t.value} transition-all duration-300 font-semibold px-6 py-3 rounded-xl border-2 ${theme === t.value ? "ring-4 ring-[var(--theme-switcher-ring)]" : "hover:ring-2 hover:ring-[var(--theme-switcher-ring)]"} ${t.value === "acrylic" ? "acrylic-inherit" : ""}`}
 																>
 																	<ThemeIcon theme={t.value as any} />
 																	<span className="ml-2 capitalize text-base" style={{ color: `var(--theme-switcher-text, #222)` }}>{t.label}</span>
