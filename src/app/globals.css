@@ -43,22 +43,22 @@
   }
 
   .acrylic {
-    --background: #ede9fe;
+    --background: #4d37ac;
     --foreground: #6d28d9;
-    --card: #ede9fe;
+    --card: #4d37ac;
     --card-foreground: #6d28d9;
-    --popover: #ede9fe;
+    --popover: #4d37ac;
     --popover-foreground: #6d28d9;
     --primary: #8b5cf6;
-    --primary-foreground: #ede9fe;
+    --primary-foreground: #4d37ac;
     --secondary: #c4b5fd;
     --secondary-foreground: #6d28d9;
-    --muted: #f5f3ff;
+    --muted: #4d37ac;
     --muted-foreground: #a78bfa;
     --accent: #a78bfa;
     --accent-foreground: #6d28d9;
     --destructive: #7c3aed;
-    --destructive-foreground: #ede9fe;
+    --destructive-foreground: #4d37ac;
     --border: #a78bfa;
     --input: #c4b5fd;
     --ring: #8b5cf6;
@@ -66,7 +66,7 @@
     --chart-2: #8b5cf6;
     --chart-3: #6d28d9;
     --chart-4: #c4b5fd;
-    --chart-5: #f5f3ff;
+    --chart-5: #4d37ac;
     --radius: 0.5rem;
     --theme-switcher-bg: #ede9fe;
     --theme-switcher-ring: #8b5cf6;
