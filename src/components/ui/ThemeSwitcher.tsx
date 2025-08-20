@@ -25,81 +25,126 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 		localStorage.setItem("theme-mode", theme);
 	}, [theme, isMounted]);
 
-				// Ref for each button to measure width/position
+					// Ref for each button to measure width/position
+					const btnRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
+					const [liquid, setLiquid] = React.useState<{ left: number; width: number; height: number } | null>(null);
+					const [maskWidth, setMaskWidth] = React.useState<number | null>(null);
+					const [maskPhase, setMaskPhase] = React.useState<'wipe' | 'appear'>('appear');
+					const [ringKey, setRingKey] = React.useState(0);
 
-							const btnRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
-								const [liquid, setLiquid] = React.useState<{ left: number; width: number; height: number } | null>(null);
-									const [ringAnim, setRingAnim] = React.useState<'vanish' | 'appear'>('appear');
-									const [ringKey, setRingKey] = React.useState(0);
-								// Ripple effect removed
-
-												React.useEffect(() => {
-													const idx = themes.findIndex(t => t.value === theme);
-													const btn = btnRefs.current[idx];
-													if (btn) {
-														const rect = btn.getBoundingClientRect();
-														const parentRect = btn.parentElement?.getBoundingClientRect();
-														if (parentRect) {
-															setLiquid({
-																left: rect.left - parentRect.left,
-																width: rect.width,
-																height: rect.height
-															});
-															setRingAnim('vanish');
-															setRingKey(prev => prev + 1);
-															setTimeout(() => setRingAnim('appear'), 250);
-														}
-													}
-												}, [theme, isMounted]);
-
-						return (
-							<div className={`relative flex items-center gap-2 ${className}`}> {/* no inline style */}
-								<div className="flex items-center gap-4 relative w-fit">
-																					{/* Modern ring animation: vanish from center, appear from sides */}
-																									<AnimatePresence mode="wait">
-																										{liquid && (
-																											<motion.div
-																												key={ringKey}
-																												layoutId="theme-ring"
-																												className="absolute z-0 pointer-events-none"
-																												style={{
-																													top: 0,
-																													left: liquid.left,
-																													width: liquid.width,
-																													height: liquid.height,
-																													borderRadius: 12,
-																													border: '3px solid #3b82f6',
-																													boxShadow: '0 0 16px 4px rgba(59,130,246,0.15)',
-																													background: 'rgba(59,130,246,0.08)',
-																													transformOrigin: 'center',
-																												}}
-																												initial={{ opacity: 1, scaleX: 1 }}
-																												animate={ringAnim === 'vanish' ? { opacity: 1, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-																												exit={{ opacity: 0, scaleX: 1 }}
-																												transition={{ duration: 0.25, ease: 'easeInOut' }}
-																											/>
-																										)}
-																									</AnimatePresence>
-									{themes.map((t, idx) => (
-										<motion.div
-											key={t.value}
-											animate={{ scale: theme === t.value ? 1.08 : 1 }}
-											transition={{ type: "spring", stiffness: 400, damping: 30 }}
-											className="z-10"
-										>
-																	<Button
-																		ref={el => { btnRefs.current[idx] = el as HTMLButtonElement | null; }}
-																		variant={theme === t.value ? (t.value as any) : "outline"}
-																		size="sm"
-																		aria-label={t.label + " theme"}
-																		onClick={() => setTheme(t.value as any)}
-																		className={theme === t.value ? "" : ""}
-																	>
-																		<ThemeIcon theme={t.value as any} />
-																	</Button>
-										</motion.div>
-									))}
-								</div>
-							</div>
-						);
+					React.useEffect(() => {
+						const idx = themes.findIndex(t => t.value === theme);
+						const btn = btnRefs.current[idx];
+						if (btn) {
+							const rect = btn.getBoundingClientRect();
+							const parentRect = btn.parentElement?.getBoundingClientRect();
+							if (parentRect) {
+								setLiquid({
+									left: rect.left - parentRect.left,
+									width: rect.width,
+									height: rect.height
+								});
+								setRingKey(prev => prev + 1);
+								// Start wipe animation
+								setMaskPhase('wipe');
+								setMaskWidth(2);
+								let start: number | null = null;
+								const duration = 350;
+								function animateWipe(ts: number) {
+									if (!start) start = ts;
+									const progress = Math.min((ts - start) / duration, 1);
+									if (liquid) setMaskWidth(2 + (liquid.width - 2) * progress);
+									if (progress < 1) {
+										requestAnimationFrame(animateWipe);
+									} else {
+										// Start appear animation after wipe
+										setTimeout(() => {
+											setMaskPhase('appear');
+											setMaskWidth(liquid ? liquid.width : null);
+											start = null;
+											function animateAppear(ts2: number) {
+												if (!start) start = ts2;
+												const progress2 = Math.min((ts2 - start) / duration, 1);
+												if (liquid) setMaskWidth(liquid.width - (liquid.width - 2) * progress2);
+												if (progress2 < 1) {
+													requestAnimationFrame(animateAppear);
+												}
+											}
+											requestAnimationFrame(animateAppear);
+										}, 50);
+									}
+								}
+								requestAnimationFrame(animateWipe);
+							}
+						}
+					}, [theme, isMounted]);
+										return (
+											<div className={className + " relative flex items-center justify-center"}>
+												{/* Animated SVG ring mask */}
+												{liquid && maskWidth !== null && (
+													<svg
+														key={ringKey}
+														className="absolute z-10 pointer-events-none"
+														style={{
+															top: 0,
+															left: liquid.left,
+															width: liquid.width,
+															height: liquid.height,
+															borderRadius: 12,
+															pointerEvents: 'none',
+															display: 'block',
+														}}
+														width={liquid.width}
+														height={liquid.height}
+													>
+														<defs>
+															<mask id={`ring-mask-${ringKey}`}> 
+																<rect x={0} y={0} width={liquid.width} height={liquid.height} fill="white" />
+																{/* Animated mask: wipe/appear */}
+																<rect
+																	x={maskPhase === 'wipe' ? liquid.width / 2 - maskWidth / 2 : 0}
+																	y={0}
+																	width={maskWidth}
+																	height={liquid.height}
+																	fill="black"
+																/>
+															</mask>
+														</defs>
+														<rect
+															x={0}
+															y={0}
+															width={liquid.width}
+															height={liquid.height}
+															rx={12}
+															fill="#e0f2ff"
+															stroke="#3b82f6"
+															strokeWidth={3}
+															mask={`url(#ring-mask-${ringKey})`}
+														/>
+													</svg>
+												)}
+												{/* Theme buttons */}
+												<div className="flex gap-4">
+													{themes.map((t, idx) => (
+														<motion.div
+															key={t.value}
+															animate={{ scale: theme === t.value ? 1.08 : 1 }}
+															transition={{ type: "spring", stiffness: 400, damping: 30 }}
+															className="z-10"
+														>
+															<Button
+																ref={el => { btnRefs.current[idx] = el as HTMLButtonElement | null; }}
+																variant={theme === t.value ? (t.value as any) : "outline"}
+																size="sm"
+																aria-label={t.label + " theme"}
+																onClick={() => setTheme(t.value as any)}
+																className={theme === t.value ? "" : ""}
+															>
+																<ThemeIcon theme={t.value as any} />
+															</Button>
+														</motion.div>
+													))}
+												</div>
+											</div>
+										);
 }
