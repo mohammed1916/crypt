@@ -78,73 +78,31 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 							}
 						}
 					}, [theme, isMounted]);
-										return (
-											<div className={className + " relative flex items-center justify-center"}>
-												{/* Animated SVG ring mask */}
-												{liquid && maskWidth !== null && (
-													<svg
-														key={ringKey}
-														className="absolute z-10 pointer-events-none"
-														style={{
-															top: 0,
-															left: liquid.left,
-															width: liquid.width,
-															height: liquid.height,
-															borderRadius: 12,
-															pointerEvents: 'none',
-															display: 'block',
-														}}
-														width={liquid.width}
-														height={liquid.height}
-													>
-														<defs>
-															<mask id={`ring-mask-${ringKey}`}> 
-																<rect x={0} y={0} width={liquid.width} height={liquid.height} fill="white" />
-																{/* Animated mask: wipe/appear */}
-																<rect
-																	x={maskPhase === 'wipe' ? liquid.width / 2 - maskWidth / 2 : 0}
-																	y={0}
-																	width={maskWidth}
-																	height={liquid.height}
-																	fill="black"
-																/>
-															</mask>
-														</defs>
-														<rect
-															x={0}
-															y={0}
-															width={liquid.width}
-															height={liquid.height}
-															rx={12}
-															fill="#e0f2ff"
-															stroke="#3b82f6"
-															strokeWidth={3}
-															mask={`url(#ring-mask-${ringKey})`}
-														/>
-													</svg>
-												)}
-												{/* Theme buttons */}
-												<div className="flex gap-4">
-													{themes.map((t, idx) => (
-														<motion.div
-															key={t.value}
-															animate={{ scale: theme === t.value ? 1.08 : 1 }}
-															transition={{ type: "spring", stiffness: 400, damping: 30 }}
-															className="z-10"
-														>
-															<Button
-																ref={el => { btnRefs.current[idx] = el as HTMLButtonElement | null; }}
-																variant={theme === t.value ? (t.value as any) : "outline"}
-																size="sm"
-																aria-label={t.label + " theme"}
-																onClick={() => setTheme(t.value as any)}
-																className={theme === t.value ? "" : ""}
+											return (
+												<div className={className + " relative flex items-center justify-center"}>
+													{/* Theme buttons */}
+													<div className="flex gap-6">
+														{themes.map((t, idx) => (
+															<motion.div
+																key={t.value}
+																animate={{ scale: theme === t.value ? 1.12 : 1, boxShadow: theme === t.value ? "0 4px 24px var(--theme-switcher-shadow, rgba(59,130,246,0.15))" : "none" }}
+																transition={{ type: "spring", stiffness: 400, damping: 30 }}
+																className="z-10"
 															>
-																<ThemeIcon theme={t.value as any} />
-															</Button>
-														</motion.div>
-													))}
+																<Button
+																	ref={el => { btnRefs.current[idx] = el as HTMLButtonElement | null; }}
+																	variant={theme === t.value ? (t.value as any) : "outline"}
+																	size="lg"
+																	aria-label={t.label + " theme"}
+																	onClick={() => setTheme(t.value as any)}
+																	className={`theme-btn theme-btn-${t.value} transition-all duration-300 font-semibold px-6 py-3 rounded-xl border-2 ${theme === t.value ? "ring-4 ring-[var(--theme-switcher-ring)]" : "hover:ring-2 hover:ring-[var(--theme-switcher-ring)]"}`}
+																>
+																	<ThemeIcon theme={t.value as any} />
+																	<span className="ml-2 capitalize text-base" style={{ color: `var(--theme-switcher-text, #222)` }}>{t.label}</span>
+																</Button>
+															</motion.div>
+														))}
+													</div>
 												</div>
-											</div>
-										);
+											);
 }

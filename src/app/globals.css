@@ -29,6 +29,10 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem
+    --theme-switcher-bg: #e0f2ff;
+    --theme-switcher-ring: #3b82f6;
+    --theme-switcher-text: #222;
+    --theme-switcher-shadow: rgba(59,130,246,0.15);
   }
   .dark {
     --background: 222.2 84% 4.9%;
@@ -54,7 +58,11 @@
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
+    --theme-switcher-bg: #202022;
+    --theme-switcher-ring: #3b82f6;
+    --theme-switcher-text: #ffffff;
+    --theme-switcher-shadow: rgba(255, 255, 255, 0.15);
   }
 }
 
@@ -64,6 +72,31 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .theme-btn {
+    background: var(--theme-switcher-bg);
+    color: var(--theme-switcher-text);
+    border-color: var(--theme-switcher-ring);
+    box-shadow: 0 2px 8px var(--theme-switcher-shadow);
+  }
+
+  .theme-btn-light {
+    --theme-switcher-bg: #f8fafc;
+    --theme-switcher-ring: #3b82f6;
+    --theme-switcher-text: #222;
+    --theme-switcher-shadow: rgba(59,130,246,0.10);
+  }
+  .theme-btn-dark {
+    --theme-switcher-bg: #1e293b;
+    --theme-switcher-ring: #fbbf24;
+    --theme-switcher-text: #fff;
+    --theme-switcher-shadow: rgba(251,191,36,0.10);
+  }
+  .theme-btn-acrylic {
+    --theme-switcher-bg: rgba(59,130,246,0.08);
+    --theme-switcher-ring: #06b6d4;
+    --theme-switcher-text: #0e7490;
+    --theme-switcher-shadow: rgba(6,182,212,0.10);
   }
 }
 

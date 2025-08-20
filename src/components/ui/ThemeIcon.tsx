@@ -68,6 +68,7 @@ export function ThemeIcon({ theme }: { theme: "light" | "dark" | "system" | "acr
           <circle cx="12" cy="12" r="5" strokeWidth="2"/>
         </motion.svg>
       )}
+    // If you want to further modernize ThemeIcon, you can add theme-based SVG or color logic here.
     </AnimatePresence>
   );
 }
