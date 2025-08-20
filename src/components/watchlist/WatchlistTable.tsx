@@ -31,7 +31,7 @@ const WatchlistTable: React.FC<WatchlistTableProps> = ({ coins }) => {
                 <span className="text-muted-foreground text-xs">{coin.symbol.toUpperCase()}</span>
               </td>
               <td className="p-2">${coin.current_price?.toLocaleString()}</td>
-              <td className={`p-2 ${coin.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>
+              <td className={`p-2 ${coin.price_change_percentage_24h > 0 ? "text-green-800" : "text-red-600"}`}>
                 {coin.price_change_percentage_24h?.toFixed(2)}%
               </td>
               <td className="p-2">${coin.market_cap?.toLocaleString()}</td>
