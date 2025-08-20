@@ -7,7 +7,11 @@ import { ToastProvider } from "@/components/ui/toast";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
+      <head>
+        <title>Crypto Dashboard</title>
+        <meta name="description" content="Track cryptocurrency prices, charts, and your watchlist with this modern dashboard." />
+      </head>
       <body>
         <ThemeProvider>
           <ToastProvider>
