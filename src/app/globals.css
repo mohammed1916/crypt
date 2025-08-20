@@ -35,8 +35,8 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem
-    --theme-switcher-bg: #e0f2ff;
+    --radius: 0.5rem;
+    --theme-switcher-bg: #222;
     --theme-switcher-ring: #3b82f6;
     --theme-switcher-text: #222;
     --theme-switcher-shadow: rgba(59,130,246,0.15);
@@ -99,7 +99,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --theme-switcher-bg: #202022;
+    --theme-switcher-bg: #3b82f6;
     --theme-switcher-ring: #3b82f6;
     --theme-switcher-text: #ffffff;
     --theme-switcher-shadow: rgba(255, 255, 255, 0.15);

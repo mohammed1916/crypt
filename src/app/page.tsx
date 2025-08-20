@@ -6,6 +6,7 @@ import FormInput from "@/components/ui/FormInput";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/toast";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function HomePage() {
   const [coins, setCoins] = useState<any[]>([]);
@@ -21,6 +22,7 @@ export default function HomePage() {
   });
   const [watchEnabled, setWatchEnabled] = useState(true);
   const showToast = useToast();
+  const { theme } = useTheme();
 
   useEffect(() => {
     setLoading(true);
@@ -88,7 +90,7 @@ export default function HomePage() {
           onChange={(e) => setFilters(f => ({ ...f, rank: e.target.value }))}
         />
         <div className="flex items-center gap-2 ml-auto">
-          <Switch checked={watchEnabled} onCheckedChange={setWatchEnabled} id="watch-toggle" />
+          <Switch theme={theme} checked={watchEnabled} onCheckedChange={setWatchEnabled} id="watch-toggle" />
           <label htmlFor="watch-toggle" className="text-sm text-muted-foreground select-none cursor-pointer">Watch View</label>
         </div>
       </div>
