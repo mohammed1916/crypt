@@ -27,111 +27,96 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 
 				// Ref for each button to measure width/position
 
-						const btnRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
-								const [liquid, setLiquid] = React.useState<{ left: number; width: number; height: number; prevLeft?: number; prevWidth?: number } | null>(null);
-								const [ripple, setRipple] = React.useState<{ x: number; y: number; radius: number } | null>(null);
-								const prevTheme = React.useRef(theme);
+							const btnRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
+							const [liquid, setLiquid] = React.useState<{ left: number; width: number; height: number } | null>(null);
+							const [ripples, setRipples] = React.useState<Array<{ x: number; y: number; radius: number }>>([]);
 
-								React.useEffect(() => {
-									const idx = themes.findIndex(t => t.value === theme);
-									const prevIdx = themes.findIndex(t => t.value === prevTheme.current);
-									const btn = btnRefs.current[idx];
-									const prevBtn = btnRefs.current[prevIdx];
-									if (btn && prevBtn) {
-										const rect = btn.getBoundingClientRect();
-										const parentRect = btn.parentElement?.getBoundingClientRect();
-										const prevRect = prevBtn.getBoundingClientRect();
-										if (parentRect) {
-											setLiquid({
-												left: rect.left - parentRect.left,
-												width: rect.width,
-												height: rect.height,
-												prevLeft: prevRect.left - parentRect.left,
-												prevWidth: prevRect.width
-											});
-											// Ripple effect: center of button
-											setRipple({
-												x: (rect.left - parentRect.left) + rect.width / 2,
-												y: rect.height / 2,
-												radius: 0
-											});
-											setTimeout(() => {
-												setRipple(r => r ? { ...r, radius: rect.width * 0.7 } : null);
-											}, 10);
-											setTimeout(() => {
-												setRipple(null);
-											}, 400);
-										}
-									}
-									prevTheme.current = theme;
-								}, [theme, isMounted]);
+										React.useEffect(() => {
+											const idx = themes.findIndex(t => t.value === theme);
+											const btn = btnRefs.current[idx];
+											if (btn) {
+												const rect = btn.getBoundingClientRect();
+												const parentRect = btn.parentElement?.getBoundingClientRect();
+												if (parentRect) {
+													setLiquid({
+														left: rect.left - parentRect.left,
+														width: rect.width,
+														height: rect.height
+													});
+													// Ripples for all buttons
+													const newRipples = btnRefs.current.map((b, i) => {
+														if (!b) return null;
+														const r = b.getBoundingClientRect();
+														return {
+															x: (r.left - parentRect.left) + r.width / 2,
+															y: r.height / 2,
+															radius: 0
+														};
+													}).filter(Boolean) as Array<{ x: number; y: number; radius: number }>;
+													setRipples(newRipples);
+													setTimeout(() => {
+														setRipples(rs => rs.map((r, i) => {
+															const btn = btnRefs.current[i];
+															if (!btn) return { ...r, radius: 0 };
+															const rect = btn.getBoundingClientRect();
+															return { ...r, radius: rect.width * 0.7 };
+														}));
+													}, 10);
+													setTimeout(() => {
+														setRipples([]);
+													}, 400);
+												}
+											}
+										}, [theme, isMounted]);
 
 						return (
 							<div className={`relative flex items-center gap-2 ${className}`}> {/* no inline style */}
 								<div className="flex items-center gap-4 relative w-fit">
-													{/* Liquid morphing SVG border animation with merging ring-primary and ring-shadow */}
-													{liquid && (
-														<motion.svg
-															className="absolute top-0 left-0 z-0 pointer-events-none"
-															width={Math.max(liquid.width, liquid.prevWidth || 0)}
-															height={liquid.height}
-															style={{
-																x: Math.min(liquid.left, liquid.prevLeft || 0),
-																y: 0,
-																overflow: 'visible',
-															}}
-														>
-															<defs>
-																<filter id="liquid-blur" x="-20%" y="-20%" width="140%" height="140%">
-																	<feGaussianBlur stdDeviation="4" result="blur" />
-																	<feMerge>
-																		<feMergeNode in="blur" />
-																		<feMergeNode in="SourceGraphic" />
-																	</feMerge>
-																</filter>
-															</defs>
-															{/* Previous ring-primary and shadow morphs into destination */}
-															{liquid.prevLeft !== undefined && liquid.prevWidth !== undefined && (
-																<motion.rect
-																	x={liquid.prevLeft - Math.min(liquid.left, liquid.prevLeft)}
-																	y={2}
-																	width={liquid.prevWidth}
-																	height={liquid.height - 4}
-																	rx={12}
-																	fill="rgba(59,130,246,0.08)"
-																	stroke="#3b82f6"
-																	strokeWidth={3}
-																	filter="url(#liquid-blur)"
-																	initial={{
-																		x: liquid.prevLeft - Math.min(liquid.left, liquid.prevLeft),
-																		width: liquid.prevWidth,
-																		opacity: 1,
-																		scale: 1
-																	}}
-																	animate={{
-																		x: liquid.left - Math.min(liquid.left, liquid.prevLeft),
-																		width: liquid.width,
-																		opacity: 1,
-																		scale: 1.05
-																	}}
-																	exit={{ opacity: 0 }}
-																	transition={{ type: "spring", stiffness: 300, damping: 30 }}
-																/>
-															)}
-															{/* Ripple effect */}
-															{ripple && (
-																<motion.circle
-																	cx={ripple.x - Math.min(liquid.left, liquid.prevLeft || 0)}
-																	cy={ripple.y}
-																	r={ripple.radius}
-																	fill="rgba(59,130,246,0.15)"
-																	initial={{ r: 0, opacity: 0.7 }}
-																	animate={{ r: ripple.radius, opacity: 0 }}
-																	transition={{ duration: 0.4, ease: "easeOut" }}
-																/>
-															)}
-														</motion.svg>
-													)}
+																	{/* Liquid ring using layoutId for merging effect */}
+																	<AnimatePresence>
+																		{liquid && (
+																			<motion.div
+																				layoutId="theme-ring"
+																				className="absolute z-0 pointer-events-none"
+																				style={{
+																					top: 0,
+																					left: liquid.left,
+																					width: liquid.width,
+																					height: liquid.height,
+																					borderRadius: 12,
+																					border: '3px solid #3b82f6',
+																					boxShadow: '0 0 16px 4px rgba(59,130,246,0.15)',
+																					background: 'rgba(59,130,246,0.08)'
+																				}}
+																				initial={{ opacity: 0, scale: 0.95 }}
+																				animate={{ opacity: 1, scale: 1 }}
+																				exit={{ opacity: 0, scale: 0.95 }}
+																				transition={{ type: "spring", stiffness: 300, damping: 30 }}
+																			/>
+																		)}
+																	</AnimatePresence>
+																	{/* Ripple effect for all buttons */}
+																	{liquid && (
+																		<svg
+																			className="absolute top-0 left-0 z-0 pointer-events-none"
+																			width={liquid.width}
+																			height={liquid.height}
+																			style={{ x: liquid.left, y: 0, overflow: 'visible' }}
+																		>
+																			{ripples.map((r, i) => (
+																				<motion.circle
+																					key={i}
+																					cx={r.x - liquid.left}
+																					cy={r.y}
+																					r={r.radius}
+																					fill="rgba(59,130,246,0.15)"
+																					initial={{ r: 0, opacity: 0.7 }}
+																					animate={{ r: r.radius, opacity: 0 }}
+																					transition={{ duration: 0.4, ease: "easeOut" }}
+																				/>
+																			))}
+																		</svg>
+																	)}
 									{themes.map((t, idx) => (
 										<motion.div
 											key={t.value}
