@@ -25,7 +25,7 @@ export async function GET(
     try {
         const headers: Record<string, string> = {};
         if (COINGECKO_API_KEY) {
-        headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
+        headers['x-cg-demo-api-key'] = COINGECKO_API_KEY;
         }
         const res = await fetch(`${COINGECKO_API}/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`, { headers });
         if (!res.ok) throw new Error('Failed to fetch');

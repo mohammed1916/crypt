@@ -316,7 +316,7 @@ function CoinDetailPageInner() {
             </div>
             <div>
               <div className="text-gray-500 text-xs">24h Change</div>
-              <div className={`font-semibold ${coin.market_data?.price_change_percentage_24h >= 0 ? "text-green-600" : "text-red-600"}`}>
+              <div className={`font-semibold ${coin.market_data?.price_change_percentage_24h >= 0 ? "text-green-800" : "text-red-600"}`}>
                 <FallbackText>{coin.market_data?.price_change_percentage_24h?.toFixed(2)}</FallbackText>%
               </div>
             </div>
@@ -440,8 +440,8 @@ function CoinDetailPageInner() {
                             <span className="text-muted-foreground text-xs">{c.symbol.toUpperCase()}</span>
                           </td>
                           <td className="p-2">${c.current_price?.toLocaleString()}</td>
-                          <td className={`p-2 ${diff !== null ? (diff > 0 ? "text-green-600" : "text-red-600") : ""}`}>{diff !== null ? diff.toFixed(2) + "%" : "-"}</td>
-                          <td className={`p-2 ${c.price_change_percentage_24h > 0 ? "text-green-600" : "text-red-600"}`}>{c.price_change_percentage_24h?.toFixed(2)}%</td>
+                          <td className={`p-2 ${diff !== null ? (diff > 0 ? "text-green-800" : "text-red-600") : ""}`}>{diff !== null ? diff.toFixed(2) + "%" : "-"}</td>
+                          <td className={`p-2 ${c.price_change_percentage_24h > 0 ? "text-green-800" : "text-red-600"}`}>{c.price_change_percentage_24h?.toFixed(2)}%</td>
                         </tr>
                       );
                     })}

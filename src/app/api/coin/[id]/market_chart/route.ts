@@ -29,7 +29,7 @@ export async function GET(
         console.log('Fetching CoinGecko:', url, 'for id:', id);
         const headers: Record<string, string> = {};
         if (COINGECKO_API_KEY) {
-        headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
+        headers['x-cg-demo-api-key'] = COINGECKO_API_KEY;
         }
         const res = await fetch(url, { headers });
         if (!res.ok) {
