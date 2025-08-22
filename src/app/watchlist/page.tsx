@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import WatchlistTable from "@/components/watchlist/WatchlistTable";
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
@@ -12,6 +13,7 @@ const getWatchlist = () => {
 };
 
 export default function WatchlistPage() {
+  const router = useRouter();
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [coins, setCoins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,6 +50,15 @@ export default function WatchlistPage() {
 
   return (
     <main className="max-w-4xl mx-auto p-4">
+      <div className="flex justify-end mb-2">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="inline-block px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold shadow hover:bg-primary/90 transition"
+        >
+          Back to Home
+        </button>
+      </div>
       <h1 className="text-2xl font-bold mb-4">Watchlist</h1>
       {loading ? (
         <LoadingSkeleton className="h-32" />
